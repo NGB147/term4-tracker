@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Term IV Tracker — MBA 2025-27</title>
+<style>
+  :root{
+    --bg:#052540; --panel:#0a3a63; --panel2:#0e4778; --line:#1c5f97;
+    --txt:#eaf4ff; --muted:#a9c7e6; --sky:#37b6ff; --orange:#ff7a1a; --saffron:#ff9838;
+    --good:#2fd08a; --bad:#ff5d6c; --warn:#ffc24d; --chip:#0e3a60;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:
+    radial-gradient(1200px 500px at 80% -10%, #0b4d84 0, transparent 60%),
+    var(--bg);color:var(--txt);font-size:14px;min-height:100vh}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,#063d70 0%,#0a63a8 55%,#0b74c4 100%);border-bottom:3px solid var(--orange);padding:10px 16px;box-shadow:0 3px 14px rgba(0,0,0,.35)}
+  .htop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.3px}
+  .sub{color:#cfe6ff;font-size:12px}
+  .spacer{flex:1}
+  select,input,textarea,button{font-family:inherit;font-size:13px}
+  select,input,textarea{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+  textarea{width:100%;resize:vertical}
+  button{cursor:pointer;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 11px;transition:.15s}
+  button:hover{border-color:var(--sky)}
+  button:disabled{opacity:.4;cursor:default}
+  .btn-accent{background:linear-gradient(90deg,var(--orange),var(--saffron));border-color:var(--orange);color:#2a1400;font-weight:700}
+  .btn-sky{background:var(--sky);border-color:var(--sky);color:#05263f;font-weight:700}
+  .tabs{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+  .tab{padding:7px 13px;border-radius:9px 9px 0 0;border:1px solid transparent;color:#d7ecff;background:rgba(255,255,255,.06)}
+  .tab.active{color:#05263f;background:var(--sky);border-color:var(--sky);font-weight:700}
+  .tab .dot{display:inline-block;min-width:16px;padding:0 4px;margin-left:5px;font-size:11px;background:var(--orange);color:#2a1400;border-radius:10px;font-weight:700}
+  main{max-width:1080px;margin:0 auto;padding:18px 16px 60px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  h2{font-size:15px;margin:0 0 12px}
+  .banner{background:linear-gradient(90deg,rgba(255,122,26,.22),rgba(255,152,56,.10));border:1px solid var(--orange);border-radius:12px;padding:13px 15px;margin-bottom:16px}
+  .banner b{color:var(--saffron)}
+  .chip{display:inline-block;background:var(--chip);border:1px solid var(--line);border-radius:20px;padding:2px 10px;font-size:12px;color:#cfe6ff}
+  .pchips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+  .pchip{padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:var(--chip);cursor:pointer;font-size:13px}
+  .pchip.active{background:linear-gradient(90deg,var(--orange),var(--saffron));color:#2a1400;font-weight:700;border-color:var(--orange)}
+  .pchip .x{margin-left:7px;opacity:.7}
+  .cls{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);margin-bottom:9px}
+  .cls.pending{border-color:var(--orange);box-shadow:0 0 0 1px rgba(255,122,26,.35) inset}
+  .cls .info{min-width:0}
+  .cls .code{font-weight:700}
+  .cls .nm{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cls .slot{color:var(--sky);font-size:11px;font-weight:700}
+  .att-btns{display:flex;gap:5px;flex-shrink:0}
+  .ab{padding:5px 9px;font-size:12px;border-radius:7px}
+  .ab.sel[data-s=P]{background:var(--good);color:#043;border-color:var(--good)}
+  .ab.sel[data-s=A]{background:var(--bad);color:#400;border-color:var(--bad)}
+  .ab.sel[data-s=C]{background:var(--warn);color:#420;border-color:var(--warn)}
+  .bar{height:10px;background:var(--panel2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--sky),var(--orange))}
+  .stat{font-size:26px;font-weight:800}
+  .stat.sm{font-size:18px}
+  .muted{color:var(--muted)}
+  .big3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .kpi{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
+  .pill.done{background:rgba(47,208,138,.15);color:var(--good);border:1px solid var(--good)}
+  .pill.due{background:rgba(255,194,77,.15);color:var(--warn);border:1px solid var(--warn)}
+  .pill.over{background:rgba(255,93,108,.15);color:var(--bad);border:1px solid var(--bad)}
+  .link{color:var(--sky);cursor:pointer;text-decoration:underline;font-size:12px}
+  .small{font-size:12px}
+  .day-nav{display:flex;gap:6px;align-items:center}
+  .empty{color:var(--muted);padding:14px;text-align:center;font-style:italic}
+  .tag{font-size:10px;padding:1px 6px;border-radius:5px;background:var(--chip);color:#cfe6ff;margin-left:6px}
+  .warnrow{color:var(--warn);font-weight:700}
+  .okrow{color:var(--good);font-weight:700}
+  .flex-tbl td:last-child{text-align:right}
+  .weekgrid{overflow-x:auto}
+  .weekgrid table{min-width:760px}
+  .wc{font-size:11px;padding:6px 4px;text-align:center;vertical-align:top}
+  .wc .b{display:block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:3px 2px;margin:2px 0;font-weight:600}
+  .wc .b.now{border-color:var(--orange)}
+  .search-wrap{position:relative}
+  .sr{position:absolute;top:100%;left:0;right:0;z-index:30;background:var(--panel2);border:1px solid var(--line);border-radius:0 0 10px 10px;max-height:260px;overflow:auto}
+  .sr div{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+  .sr div:hover{background:var(--chip)}
+  .modal-bg{position:fixed;inset:0;background:rgba(2,15,28,.75);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;max-width:520px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+  a{color:var(--sky)}
+</style>
+</head>
+<body>
+<header>
+  <div class="htop">
+    <div>
+      <h1>&#127951; Term IV Tracker <span class="tag">MBA 2025-27</span></h1>
+      <div class="sub" id="rangeSub"></div>
+    </div>
+    <div class="spacer"></div>
+    <button id="syncBtn" title="Sync schedule from the live Google Sheet">&#128260; Sync</button>
+    <button id="bellBtn" title="Enable class &amp; attendance reminders">&#128276; Reminders: off</button>
+    <button id="whoBtn" title="Change who I am">&#128100; <span id="whoName">Set profile</span></button>
+    <label class="small" style="color:#d7ecff">Target %</label>
+    <input id="targetInp" type="number" min="0" max="100" value="75" style="width:60px">
+  </div>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-t="today">Today</div>
+    <div class="tab" data-t="week">Week</div>
+    <div class="tab" data-t="attendance">Attendance</div>
+    <div class="tab" data-t="courses">Courses</div>
+    <div class="tab" data-t="learnings">Learnings</div>
+    <div class="tab" data-t="assignments">Assignments</div>
+    <div class="tab" data-t="friends">Friends</div>
+    <div class="tab" data-t="holidays">Holidays</div>
+  </div>
+</header>
+<main><div id="view"></div><div style="text-align:center;padding:22px 0 10px;color:var(--muted);font-size:11.5px;opacity:.75;letter-spacing:.4px">made out of boredom by <b style="color:var(--saffron)">H&amp;N</b> 🏏🏀</div></main>
+<div id="modalHost"></div>
+
+<script>
+// Auto-generated from 'Term IV Schedule for MBA 2025-27.xlsx'
+window.SCHEDULE = [{"date":"2026-06-15","day":"Monday","section":"Section A","slots":["Term Registration","","","SAPM-1","","CS-1","CS-2"]},{"date":"2026-06-15","day":"Monday","section":"Section B","slots":["","","","","SAPM-1","BM-1","BM-2"]},{"date":"2026-06-15","day":"Monday","section":"Single Section","slots":["","","","TCBA-1","","",""]},{"date":"2026-06-16","day":"Tuesday","section":"Section A","slots":["","","","DVB-1","","BM-1","BM-2"]},{"date":"2026-06-16","day":"Tuesday","section":"Section B","slots":["CS-1","CS-2","FPWM-1","","DVB-1","",""]},{"date":"2026-06-16","day":"Tuesday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-06-17","day":"Wednesday","section":"Section A","slots":["","","FPWM-1","","SAPM-2","CS-3","CS-4"]},{"date":"2026-06-17","day":"Wednesday","section":"Section B","slots":["CS-3","CS-4","","SAPM-2","","BM-3","BM-4"]},{"date":"2026-06-17","day":"Wednesday","section":"Single Section","slots":["","","BAMD-1","","TCBA-2","",""]},{"date":"2026-06-18","day":"Thursday","section":"Section A","slots":["","IBS-1","PMA-1","DVB-2","","BM-3","BM-4"]},{"date":"2026-06-18","day":"Thursday","section":"Section B","slots":["IBS-1","PMA-1","","","DVB-2","",""]},{"date":"2026-06-18","day":"Thursday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-06-19","day":"Friday","section":"Section A","slots":["","","FPWM-2","PM-1","","BM-5",""]},{"date":"2026-06-19","day":"Friday","section":"Section B","slots":["","FPWM-2","","","PM-1","","BM-5"]},{"date":"2026-06-19","day":"Friday","section":"Single Section","slots":["","","BAMD-2","","","",""]},{"date":"2026-06-20","day":"Saturday","section":"Section A","slots":["","","","PMA-2","","PM-2",""]},{"date":"2026-06-20","day":"Saturday","section":"Section B","slots":["","","","","PMA-2","","PM-2"]},{"date":"2026-06-20","day":"Saturday","section":"Single Section","slots":["GPP-1","GPP-2","DPM-1","","","",""]},{"date":"2026-06-21","day":"Sunday","section":"Section A","slots":["INTERNATIONAL YOGA DAY","","","IBS-2","","",""]},{"date":"2026-06-21","day":"Sunday","section":"Section B","slots":["","","","","IBS-2","",""]},{"date":"2026-06-21","day":"Sunday","section":"Single Section","slots":["DPM-2","DPM-3","","","","",""]},{"date":"2026-06-22","day":"Monday","section":"Section A","slots":["","PM-3","","SAPM-3","","FPWM-3",""]},{"date":"2026-06-22","day":"Monday","section":"Section B","slots":["","","PM-3","","SAPM-3","","FPWM-3"]},{"date":"2026-06-22","day":"Monday","section":"Single Section","slots":["","","","TCBA-3","","BAMD-3",""]},{"date":"2026-06-23","day":"Tuesday","section":"Section A","slots":["PMA-3","IBS-3","","DVB-3","","",""]},{"date":"2026-06-23","day":"Tuesday","section":"Section B","slots":["","PMA-3","IBS-3","","DVB-3","",""]},{"date":"2026-06-23","day":"Tuesday","section":"Single Section","slots":["","","","","AMR-1","",""]},{"date":"2026-06-24","day":"Wednesday","section":"Section A","slots":["","PMA-4","IBS-4","","SAPM-4","PM-4",""]},{"date":"2026-06-24","day":"Wednesday","section":"Section B","slots":["IBS-4","","PMA-4","SAPM-4","","","PM-4"]},{"date":"2026-06-24","day":"Wednesday","section":"Single Section","slots":["","","","","TCBA-4","",""]},{"date":"2026-06-25","day":"Thursday","section":"Section A","slots":["","DVB-4","","","FPWM-4","",""]},{"date":"2026-06-25","day":"Thursday","section":"Section B","slots":["","","DVB-4","","","FPWM-4",""]},{"date":"2026-06-25","day":"Thursday","section":"Single Section","slots":["","","AMR-2","GPP-3","BAMD-4","",""]},{"date":"2026-06-26","day":"Friday","section":"Section A","slots":["","","","","","BM 6 \u00267 Guest Session ( Seminar Hall)",""]},{"date":"2026-06-26","day":"Friday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-06-26","day":"Friday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-06-27","day":"Saturday","section":"Section A","slots":["","PM-5","","","","",""]},{"date":"2026-06-27","day":"Saturday","section":"Section B","slots":["","","PM-5","","","",""]},{"date":"2026-06-27","day":"Saturday","section":"Single Section","slots":["","","","BBM-1","BBM-2","DPM-4","DPM-5"]},{"date":"2026-06-28","day":"Sunday","section":"Section A","slots":["","","","","","",""]},{"date":"2026-06-28","day":"Sunday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-06-28","day":"Sunday","section":"Single Section","slots":["DPM-6","DPM-7","","BBM-3","BBM-4","",""]},{"date":"2026-06-29","day":"Monday","section":"Section A","slots":["","","","SAPM-5","","PMA-5","PM-6"]},{"date":"2026-06-29","day":"Monday","section":"Section B","slots":["PMA-5","","PM-6","","SAPM-5","",""]},{"date":"2026-06-29","day":"Monday","section":"Single Section","slots":["","","","TCBA-5","","",""]},{"date":"2026-06-30","day":"Tuesday","section":"Section A","slots":["PMA-6","","","FPWM-5","IBS- 5","",""]},{"date":"2026-06-30","day":"Tuesday","section":"Section B","slots":["","FPWM-5","","","PMA-6","IBS- 5",""]},{"date":"2026-06-30","day":"Tuesday","section":"Single Section","slots":["","","","BAMD-5","","",""]},{"date":"2026-07-01","day":"Wednesday","section":"Section A","slots":["","","IBS-6","","MPB-1","FPWM-6",""]},{"date":"2026-07-01","day":"Wednesday","section":"Section B","slots":["PM-7","IBS-6","","MPB-1","","BAMD-6","FPWM-6"]},{"date":"2026-07-01","day":"Wednesday","section":"Single Section","slots":["","","","","GPP 4","",""]},{"date":"2026-07-02","day":"Thursday","section":"Section A","slots":["PM-7","DVB-5","","SAPM-6","","","CS-5"]},{"date":"2026-07-02","day":"Thursday","section":"Section B","slots":["","","DVB-5","","SAPM-6","CS-5",""]},{"date":"2026-07-02","day":"Thursday","section":"Single Section","slots":["","","AMR-3","TCBA-6","","",""]},{"date":"2026-07-03","day":"Friday","section":"Section A","slots":["","FPWM-7","","DVB-6","","CS-6",""]},{"date":"2026-07-03","day":"Friday","section":"Section B","slots":["","","FPWM-7","","DVB-6","","CS-6"]},{"date":"2026-07-03","day":"Friday","section":"Single Section","slots":["GPP 5 Guest Session","BAMD-7","","","AMR-4","",""]},{"date":"2026-07-04","day":"Saturday","section":"Section A","slots":["","","","MPB-2","","CS-7",""]},{"date":"2026-07-04","day":"Saturday","section":"Section B","slots":["","","","","MPB-2","BM-8","CS-7"]},{"date":"2026-07-04","day":"Saturday","section":"Single Section","slots":["","AIB-1","AIB-2","","","",""]},{"date":"2026-07-05","day":"Sunday","section":"Section A","slots":["","","","CS-8","BM-8","BM-9",""]},{"date":"2026-07-05","day":"Sunday","section":"Section B","slots":["","","CS-8","BM-9","","","CS-9"]},{"date":"2026-07-05","day":"Sunday","section":"Single Section","slots":["AIB-3","AIB-4","","","","",""]},{"date":"2026-07-06","day":"Monday","section":"Section A","slots":["CS-9","BM-10","FPWM-8","DVB-7","","CS-10",""]},{"date":"2026-07-06","day":"Monday","section":"Section B","slots":["BM-10","","BAMD-8","","DVB-7","","CS-10"]},{"date":"2026-07-06","day":"Monday","section":"Single Section","slots":["","","","","AMR-5","",""]},{"date":"2026-07-07","day":"Tuesday","section":"Section A","slots":["PM-8","","","MPB-3","","",""]},{"date":"2026-07-07","day":"Tuesday","section":"Section B","slots":["","PM-8","FPWM-8","","MPB-3","PP-1","PP-2"]},{"date":"2026-07-07","day":"Tuesday","section":"Single Section","slots":["","","","GPP - 6","","",""]},{"date":"2026-07-08","day":"Wednesday","section":"Section A","slots":["PP-1","PP-2","","SAPM-7","","",""]},{"date":"2026-07-08","day":"Wednesday","section":"Section B","slots":["","","AMR-6","","SAPM-7","PP-3","PP-4"]},{"date":"2026-07-08","day":"Wednesday","section":"Single Section","slots":["","","","TCBA-7","","",""]},{"date":"2026-07-09","day":"Thursday","section":"Section A","slots":["BM- MID Term","DVB-8","","FPWM-9","","PP-3","PP-4"]},{"date":"2026-07-09","day":"Thursday","section":"Section B","slots":["","","DVB-8","BAMD-9","FPWM-9","",""]},{"date":"2026-07-09","day":"Thursday","section":"Single Section","slots":["","","AMR-7","","","",""]},{"date":"2026-07-10","day":"Friday","section":"Section A","slots":["PP-5","","","SAPM-8","","",""]},{"date":"2026-07-10","day":"Friday","section":"Section B","slots":["","PP-5","","","SAPM-8","",""]},{"date":"2026-07-10","day":"Friday","section":"Single Section","slots":["","","","TCBA-8","","",""]},{"date":"2026-07-11","day":"Saturday","section":"Section A","slots":["","","CS MID term","MPB-4","","PM-9","PM-10"]},{"date":"2026-07-11","day":"Saturday","section":"Section B","slots":["PM-9","PM-10","","","MPB-4","",""]},{"date":"2026-07-11","day":"Saturday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-07-12","day":"Sunday","section":"Section A","slots":["","","PM-11","DVB-9","DVB-10","",""]},{"date":"2026-07-12","day":"Sunday","section":"Section B","slots":["PM-11","PM-12","","","","DVB-9","DVB-10"]},{"date":"2026-07-12","day":"Sunday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-07-13","day":"Monday","section":"Section A","slots":["PMA-7","","","SAPM-9","","",""]},{"date":"2026-07-13","day":"Monday","section":"Section B","slots":["","PMA-7","","","SAPM-9","",""]},{"date":"2026-07-13","day":"Monday","section":"Single Section","slots":["","","GPP-7","TCBA-9","","AMR-8",""]},{"date":"2026-07-14","day":"Tuesday","section":"Section A","slots":["SCM-1","SCM-2","","","MPB-5","",""]},{"date":"2026-07-14","day":"Tuesday","section":"Section B","slots":["","","DVB-11","MPB-5","","SCM-1","SCM-2"]},{"date":"2026-07-14","day":"Tuesday","section":"Single Section","slots":["","","AMR-9","","GPP-8","BBM-5","BBM-6"]},{"date":"2026-07-15","day":"Wednesday","section":"Section A","slots":["BM-11","CS-11","","SAPM-10","","",""]},{"date":"2026-07-15","day":"Wednesday","section":"Section B","slots":["","BM-11","CS-11","","SAPM-10","SCM-3","SCM-4"]},{"date":"2026-07-15","day":"Wednesday","section":"Single Section","slots":["","","","TCBA-10","","BBM-7","BBM-8"]},{"date":"2026-07-16","day":"Thursday","section":"Section A","slots":["SCM-3","SCM-4","DVB-11","FPWM-10","","",""]},{"date":"2026-07-16","day":"Thursday","section":"Section B","slots":["","","","BAMD-10","FPWM-10","SCM-5","SCM-6"]},{"date":"2026-07-16","day":"Thursday","section":"Single Section","slots":["","","","","","BBM-9","BBM-10"]},{"date":"2026-07-17","day":"Friday","section":"Section A","slots":["","CS-12","BM-12","","","SCM-5","SCM-6"]},{"date":"2026-07-17","day":"Friday","section":"Section B","slots":["CS-12","BM-12","","WAI-1","WAI-2","",""]},{"date":"2026-07-17","day":"Friday","section":"Single Section","slots":["","","","OFD-1","OFD-2","",""]},{"date":"2026-07-18","day":"Saturday","section":"Section A","slots":["SPM MID Term Exam","DVB-12","","","MPB-6","",""]},{"date":"2026-07-18","day":"Saturday","section":"Section B","slots":["","","DVB-12","MPB-6","","WAI-3","WAI-4"]},{"date":"2026-07-18","day":"Saturday","section":"Single Section","slots":["","","","","","OFD-3","OFD-4"]},{"date":"2026-07-19","day":"Sunday","section":"Section A","slots":["","","","WAI-1","WAI-2","",""]},{"date":"2026-07-19","day":"Sunday","section":"Section B","slots":["","WAI-5","WAI-6","","","",""]},{"date":"2026-07-19","day":"Sunday","section":"Single Section","slots":["","OFD-5","OFD-6","","","",""]},{"date":"2026-07-20","day":"Monday","section":"Section A","slots":["","PMA-8","IBS-7","","SAPM-11","",""]},{"date":"2026-07-20","day":"Monday","section":"Section B","slots":["IBS-7","","PMA-8","SAPM-11","","",""]},{"date":"2026-07-20","day":"Monday","section":"Single Section","slots":["","","","","TCBA-11","OFD-7","OFD-8"]},{"date":"2026-07-21","day":"Tuesday","section":"Section A","slots":["","","","BM-13","CS-13","",""]},{"date":"2026-07-21","day":"Tuesday","section":"Section B","slots":["","","CS-13","","BM-13","DVB-13",""]},{"date":"2026-07-21","day":"Tuesday","section":"Single Section","slots":["OFD-9","OFD-10","","","","AMR-11",""]},{"date":"2026-07-22","day":"Wednesday","section":"Section A","slots":["PMA-9","IBS-8","","SAPM-12","","DVB-13",""]},{"date":"2026-07-22","day":"Wednesday","section":"Section B","slots":["","PMA-9","IBS-8","","SAPM-12","",""]},{"date":"2026-07-22","day":"Wednesday","section":"Single Section","slots":["","","","TCBA-12","","",""]},{"date":"2026-07-23","day":"Thursday","section":"Section A","slots":["","PMA-10","","DVB-14","","FPWM-11",""]},{"date":"2026-07-23","day":"Thursday","section":"Section B","slots":["PMA-10","","DVB-14","","FPWM-11","",""]},{"date":"2026-07-23","day":"Thursday","section":"Single Section","slots":["","","AMR-12","","","ADE-1","ADE-2"]},{"date":"2026-07-24","day":"Friday","section":"Section A","slots":["BM-14","CS-14","","","MPB-7","",""]},{"date":"2026-07-24","day":"Friday","section":"Section B","slots":["","BM-14","CS-14","MPB-7","","",""]},{"date":"2026-07-24","day":"Friday","section":"Single Section","slots":["","","","","GPP-9","ADE-3","ADE-4"]},{"date":"2026-07-25","day":"Saturday","section":"Section A","slots":["SCM-7","","MBP Guest","","","",""]},{"date":"2026-07-25","day":"Saturday","section":"Section B","slots":["","SCM-7","","","","",""]},{"date":"2026-07-25","day":"Saturday","section":"Single Section","slots":["","","","ADE-5","ADE-6","AIB-5","AIB-6"]},{"date":"2026-07-26","day":"Sunday","section":"Section A","slots":["","","MBP Guest","SCM-8","SCM-9","",""]},{"date":"2026-07-26","day":"Sunday","section":"Section B","slots":["","","","","","SCM-8","SCM-9"]},{"date":"2026-07-26","day":"Sunday","section":"Single Section","slots":["AIB-7","AIB-8","","","","BBM-11","BBM-12"]},{"date":"2026-07-27","day":"Monday","section":"Section A","slots":["PMA MID term","","PMA-11","SAPM-13","","",""]},{"date":"2026-07-27","day":"Monday","section":"Section B","slots":["","PMA-11","","","SAPM-13","SCM-10","SCM-11"]},{"date":"2026-07-27","day":"Monday","section":"Single Section","slots":["","","","TCBA-13","","BBM-13","BBM-14"]},{"date":"2026-07-28","day":"Tuesday","section":"Section A","slots":["","IBS-9","","DVB-15","","SCM-10","SCM-11"]},{"date":"2026-07-28","day":"Tuesday","section":"Section B","slots":["IBS-9","","BBM-15","","DVB-15","",""]},{"date":"2026-07-28","day":"Tuesday","section":"Single Section","slots":["","","","","AMR-13","",""]},{"date":"2026-07-29","day":"Wednesday","section":"Section A","slots":["PMA-12","","IBS-10","SAPM-14","","",""]},{"date":"2026-07-29","day":"Wednesday","section":"Section B","slots":["","IBS-10","PMA-12","","SAPM-14","",""]},{"date":"2026-07-29","day":"Wednesday","section":"Single Section","slots":["","","","TCBA-14","","IB-1","IB-2"]},{"date":"2026-07-30","day":"Thursday","section":"Section A","slots":["","CS-15","BM-15","","","PMA-13",""]},{"date":"2026-07-30","day":"Thursday","section":"Section B","slots":["CS-15","BM-15","","FPWM-12","FPWM-13","","PMA-13"]},{"date":"2026-07-30","day":"Thursday","section":"Single Section","slots":["","","","IB-3","IB-4","",""]},{"date":"2026-07-31","day":"Friday","section":"Section A","slots":["","DVB-16","","","","",""]},{"date":"2026-07-31","day":"Friday","section":"Section B","slots":["","","DVB-16","","FPWM-12","FPWM-13",""]},{"date":"2026-07-31","day":"Friday","section":"Single Section","slots":["IB-5","","AMR-14","BAMD-11","","",""]},{"date":"2026-08-01","day":"Saturday","section":"Section A","slots":["PM - MID term","","","","FPWM-14","PM-13","PM-14"]},{"date":"2026-08-01","day":"Saturday","section":"Section B","slots":["","PM-12","PM-13","FPWM-14","BAMD-12","WAI-7","WAI-8"]},{"date":"2026-08-01","day":"Saturday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-02","day":"Sunday","section":"Section A","slots":["IBS - MID Term","","","PM-15","PM-16","WAI-3","WAI-4"]},{"date":"2026-08-02","day":"Sunday","section":"Section B","slots":["","PM-14","PM-15","WAI-9","WAI-10","",""]},{"date":"2026-08-02","day":"Sunday","section":"Single Section","slots":["","","","","","DPM-13","DPM-14"]},{"date":"2026-08-03","day":"Monday","section":"Section A","slots":["","PMA-14","","SAPM-5","","WAI-5","WAI-6"]},{"date":"2026-08-03","day":"Monday","section":"Section B","slots":["","","PMA-14","","SAPM-15","",""]},{"date":"2026-08-03","day":"Monday","section":"Single Section","slots":["","","","TCBA-15","","DPM-15","DPM-16"]},{"date":"2026-08-04","day":"Tuesday","section":"Section A","slots":["","IBS-11","PMA-15","DVB-17","","",""]},{"date":"2026-08-04","day":"Tuesday","section":"Section B","slots":["IBS-11","PMA-15","","","DVB-17","",""]},{"date":"2026-08-04","day":"Tuesday","section":"Single Section","slots":["","","","","AMR-15","AMR-16",""]},{"date":"2026-08-05","day":"Wednesday","section":"Section A","slots":["IBS-12","IBS-13","","","SAPM-16","",""]},{"date":"2026-08-05","day":"Wednesday","section":"Section B","slots":["","","","SAPM-16","","IBS-12","IBS-13"]},{"date":"2026-08-05","day":"Wednesday","section":"Single Section","slots":["","","TCBA-16","","TCBA-17","",""]},{"date":"2026-08-06","day":"Thursday","section":"Section A","slots":["SCM-11","SCM-12","PMA-16","","","PP-6","PP-7"]},{"date":"2026-08-06","day":"Thursday","section":"Section B","slots":["PP-6","PP-7","","SCM-11","SCM-12","",""]},{"date":"2026-08-06","day":"Thursday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-07","day":"Friday","section":"Section A","slots":["SCM-13","SCM-14","","PP-8","PP-9","",""]},{"date":"2026-08-07","day":"Friday","section":"Section B","slots":["PP-8","PP-9","PMA-16","","","",""]},{"date":"2026-08-07","day":"Friday","section":"Single Section","slots":["","","","","","ADE-7","ADE-8"]},{"date":"2026-08-08","day":"Saturday","section":"Section A","slots":["","","PP-10","","","SCM-15","SCM-16"]},{"date":"2026-08-08","day":"Saturday","section":"Section B","slots":["SCM-13","SCM-14","DVB-18","PP-10","","",""]},{"date":"2026-08-08","day":"Saturday","section":"Single Section","slots":["","","","ADE-9","ADE-10","",""]},{"date":"2026-08-09","day":"Sunday","section":"Section A","slots":["","","FPWM-15","SCM-15","SCM-16","",""]},{"date":"2026-08-09","day":"Sunday","section":"Section B","slots":["","","","","","FPWM-15",""]},{"date":"2026-08-09","day":"Sunday","section":"Single Section","slots":["AIB-9","AIB-10","","","","",""]},{"date":"2026-08-10","day":"Monday","section":"Section A","slots":["","","DVB-18","SAPM-17","","FPWM-16",""]},{"date":"2026-08-10","day":"Monday","section":"Section B","slots":["","DVB-18","","","SAPM-17","BAMD-13","FPWM-16"]},{"date":"2026-08-10","day":"Monday","section":"Single Section","slots":["","AMR-17","","TCBA-18","","",""]},{"date":"2026-08-11","day":"Tuesday","section":"Section A","slots":["BM-16","CS-16","","","MPB-8","",""]},{"date":"2026-08-11","day":"Tuesday","section":"Section B","slots":["","BM-16","CS-16","MPB-8","","",""]},{"date":"2026-08-11","day":"Tuesday","section":"Single Section","slots":["","","","","GPP-10","IB-6","IB-7"]},{"date":"2026-08-12","day":"Wednesday","section":"Section A","slots":["","","BM-17","CS-17","","FPWM-17",""]},{"date":"2026-08-12","day":"Wednesday","section":"Section B","slots":["","","","BM-17","CS-17","BAMD-14","FPWM-17"]},{"date":"2026-08-12","day":"Wednesday","section":"Single Section","slots":["IB-8","IB-9","","","","",""]},{"date":"2026-08-13","day":"Thursday","section":"Section A","slots":["","","","IBS-14","","PMA-17",""]},{"date":"2026-08-13","day":"Thursday","section":"Section B","slots":["","","","PMA-17","IBS-14","",""]},{"date":"2026-08-13","day":"Thursday","section":"Single Section","slots":["OFD-11","OFD-12","IB-10","","","",""]},{"date":"2026-08-14","day":"Friday","section":"Section A","slots":["","","IBS-15","SAPM-18","","","PMA-18"]},{"date":"2026-08-14","day":"Friday","section":"Section B","slots":["","","PMA-18","","SAPM-18","IBS-15",""]},{"date":"2026-08-14","day":"Friday","section":"Single Section","slots":["OFD-13","OFD-14","","TCBA-19","","",""]},{"date":"2026-08-15","day":"Saturday","section":"Section A","slots":["Independence Day","","","","","",""]},{"date":"2026-08-15","day":"Saturday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-15","day":"Saturday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-16","day":"Sunday","section":"Section A","slots":["PM-17","PM-18","BM-18","FPWM-18","","",""]},{"date":"2026-08-16","day":"Sunday","section":"Section B","slots":["","","","BAMD-15","FPWM-18","PM-16","PM-17"]},{"date":"2026-08-16","day":"Sunday","section":"Single Section","slots":["OFD-15","OFD-16","","","","",""]},{"date":"2026-08-17","day":"Monday","section":"Section A","slots":["PM-19","PM-20","","SAPM-19","","FPWM-19","FPWM-20"]},{"date":"2026-08-17","day":"Monday","section":"Section B","slots":["","","PM-18","","SAPM-19","BAMD-16",""]},{"date":"2026-08-17","day":"Monday","section":"Single Section","slots":["OFD-17","OFD-18","","TCBA-20","","",""]},{"date":"2026-08-18","day":"Tuesday","section":"Section A","slots":["","","","","CS-18","",""]},{"date":"2026-08-18","day":"Tuesday","section":"Section B","slots":["","","PM-19","CS-18","BM-18","FPWM-19","FPWM-20"]},{"date":"2026-08-18","day":"Tuesday","section":"Single Section","slots":["OFD-19","OFD-20","","","","",""]},{"date":"2026-08-19","day":"Wednesday","section":"Section A","slots":["PMA-19","PMA-20","","SAPM-20","","IBS-16",""]},{"date":"2026-08-19","day":"Wednesday","section":"Section B","slots":["","","IBS-16","","SAPM-20","PMA-19","PMA-20"]},{"date":"2026-08-19","day":"Wednesday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-20","day":"Thursday","section":"Section A","slots":["BM-19","CS-19","","MPB-9","","IBS-17",""]},{"date":"2026-08-20","day":"Thursday","section":"Section B","slots":["","BM-19","CS-19","","MPB-9","","IBS-17"]},{"date":"2026-08-20","day":"Thursday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-21","day":"Friday","section":"Section A","slots":["","","","CS-20","","IBS-18","IBS-19"]},{"date":"2026-08-21","day":"Friday","section":"Section B","slots":["","","CS-20","BM-20","","",""]},{"date":"2026-08-21","day":"Friday","section":"Single Section","slots":["","AMR-18","","","BAMD-17","",""]},{"date":"2026-08-22","day":"Saturday","section":"Section A","slots":["BM-20","","","MPB-10","","SCM-17",""]},{"date":"2026-08-22","day":"Saturday","section":"Section B","slots":["","","","","MPB-10","","SCM-17"]},{"date":"2026-08-22","day":"Saturday","section":"Single Section","slots":["","BAMD-18","BAMD-19","","","",""]},{"date":"2026-08-23","day":"Sunday","section":"Section A","slots":["","SCM-18","SCM-19","DVB-19 Guest Session","DVB-20 Guest Session","",""]},{"date":"2026-08-23","day":"Sunday","section":"Section B","slots":["","","","","","SCM-18","SCM-19"]},{"date":"2026-08-23","day":"Sunday","section":"Single Section","slots":["BAMD-20","","","","","",""]},{"date":"2026-08-24","day":"Monday","section":"Section A","slots":["","","","WAI-7","WAI-8","SCM-20",""]},{"date":"2026-08-24","day":"Monday","section":"Section B","slots":["","","","","","","SCM-20"]},{"date":"2026-08-24","day":"Monday","section":"Single Section","slots":["BBM - 16","AMR-19","AMR-20","DPM-17","DPM-18","",""]},{"date":"2026-08-25","day":"Tuesday","section":"Section A","slots":["WAI-9","WAI-10","","SAPM-Extra","SAPM-Extra","IBS-20",""]},{"date":"2026-08-25","day":"Tuesday","section":"Section B","slots":["","","","","","","IBS-20"]},{"date":"2026-08-25","day":"Tuesday","section":"Single Section","slots":["DPM-19","DPM-20","BBM-17","BBM - 18","","",""]},{"date":"2026-08-26","day":"Wednesday","section":"Section A","slots":["","","","","","",""]},{"date":"2026-08-26","day":"Wednesday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-26","day":"Wednesday","section":"Single Section","slots":["BBM-19","BBM-20","","","","",""]},{"date":"2026-08-27","day":"Thursday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-08-27","day":"Thursday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-27","day":"Thursday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-28","day":"Friday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-08-28","day":"Friday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-28","day":"Friday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-29","day":"Saturday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-08-29","day":"Saturday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-29","day":"Saturday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-30","day":"Sunday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-08-30","day":"Sunday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-30","day":"Sunday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-08-31","day":"Monday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-08-31","day":"Monday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-08-31","day":"Monday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-09-01","day":"Tuesday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-09-01","day":"Tuesday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-09-01","day":"Tuesday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-09-02","day":"Wednesday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-09-02","day":"Wednesday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-09-02","day":"Wednesday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-09-03","day":"Thursday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-09-03","day":"Thursday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-09-03","day":"Thursday","section":"Single Section","slots":["","","","","","",""]},{"date":"2026-09-04","day":"Friday","section":"Section A","slots":["END Term","","","END Term","END Term","",""]},{"date":"2026-09-04","day":"Friday","section":"Section B","slots":["","","","","","",""]},{"date":"2026-09-04","day":"Friday","section":"Single Section","slots":["","","","","","",""]}]
+;
+window.COURSES = {"BM":{"name":"Brand Management","credits":3,"prof":"Prof. Poonam Kumar (11-20) and Dr. Anurag Dugar (1-10)"},"CS":{"name":"Corporate Strategy","credits":3,"prof":"Prof. Nilesh Khare (1-10) & Prof. Aarti Singh (11-20)"},"SAPM":{"name":"Security Analysis and Portfolio Management","credits":3,"prof":"Prof. Soumya Guha Deb"},"DVB":{"name":"Data Visualization and Business Storytelling","credits":3,"prof":"Prof. Siddharth Gaurav Majhi (1-10) & Prof. Atanu Dey (11-20)"},"PM":{"name":"Project Management","credits":3,"prof":"Prof. Rohit Gupta (1-08) and Dr. Shounak Pal (09-20)"},"PMA":{"name":"Product Management and Analytics","credits":3,"prof":"Prof. Nitin Soni"},"FPWM":{"name":"Financial Planning and Wealth Management","credits":3,"prof":"Prof. Diwahar Nadar"},"IBS":{"name":"International Business","credits":3,"prof":"Prof. Aqueeb Sohail Shaik"},"AMR":{"name":"Advance Marketing Research","credits":3,"prof":"Prof. Meta Dev Prasad Murthy"},"TCBA":{"name":"Tech Consulting and Business Analysis","credits":3,"prof":"Prof. Merlin Nandy"},"BAMD":{"name":"Business Analytics for Managerial Decisions","credits":3,"prof":"Prof. Atanu Dey"},"MPB":{"name":"Managing Platform Business","credits":1.5,"prof":"Prof. Diptiranjan Mahapatra"},"GPP":{"name":"Game People Play","credits":1.5,"prof":"Prof. Shikha Bhardwaj"},"SCM":{"name":"Supply Chain Management","credits":3,"prof":"Dr. V. G Venkatesh"},"BBM":{"name":"Business to Business Marketing","credits":3,"prof":"Prof. Irfan Shamin (1-15) & Prof. G Sridhar (16-20)"},"OFD":{"name":"Options Futures and Derivatives","credits":3,"prof":"Prof. Udayan Sharma"},"WAI":{"name":"Working with AI","credits":1.5,"prof":"Dr. Preet Deep Singh & Dr. Simarjeet Singh"},"PP":{"name":"Pricing & Policy","credits":1.5,"prof":"Prof. Jishnu Changkakoti"},"DPM":{"name":"Digital Product Management","credits":3,"prof":"Ms. Ankita Parihar (1-12) & Mr. Ramkumar Armugam (13-20)"},"IB":{"name":"Investment Banking","credits":1.5,"prof":"Prof. Pratap Giri"},"ADE":{"name":"Agile in Digital Environment","credits":1.5,"prof":"Dr. Arnab Banerjee"},"AIB":{"name":"AI for Business","credits":1.5,"prof":"Dr. Ashish Sharma"}};
+</script>
+<script>
+// Batch roster: 307 students with section + electives (from course sheets)
+window.STUDENTS = {"2024MBA014":{"n":"NANDANA T K","s":"B","c":{"AIB":"","BBM":"","DPM":"","FPWM":"A","IBS":"B","PM":"B","WAI":"B"}},"2025MBA001":{"n":"AKRITI RANJAN","s":"A","c":{"BAMD":"","CS":"A","DPM":"","IBS":"A","PM":"A","SCM":"A","TCBA":""}},"2025MBA002":{"n":"AKRITI YADAV","s":"B","c":{"BM":"B","DPM":"","GPP":"","IBS":"B","PM":"B","PMA":"B","WAI":"B"}},"2025MBA003":{"n":"AMAL JOY","s":"A","c":{"CS":"A","DPM":"","FPWM":"B","MPB":"B","PM":"A","SCM":"A","TCBA":""}},"2025MBA004":{"n":"AMBEDKAR KUMAR","s":"B","c":{"BM":"B","DPM":"","DVB":"A","IBS":"B","PM":"A","PMA":"B","SCM":"B"}},"2025MBA005":{"n":"AMIT BHUSHAN P","s":"A","c":{"AMR":"","BBM":"","CS":"A","DPM":"","IBS":"A","TCBA":"","WAI":"B"}},"2025MBA006":{"n":"ANIRZEET PRAMANIK","s":"A","c":{"AMR":"","BAMD":"","GPP":"","IBS":"A","MPB":"B","OFD":"","PP":"B","SAPM":"B","WAI":"A"}},"2025MBA007":{"n":"ANVESH UDAY VAIDYA","s":"B","c":{"AMR":"","BAMD":"","DVB":"A","MPB":"B","PM":"B","SCM":"A","WAI":"B"}},"2025MBA008":{"n":"ARCHI ARORA","s":"B","c":{"ADE":"","DVB":"A","IBS":"B","PM":"A","PMA":"B","PP":"A","SCM":"B"}},"2025MBA009":{"n":"ARUNA CHOUDHARY","s":"A","c":{"AMR":"","BBM":"","CS":"A","FPWM":"B","IBS":"A","PP":"B","WAI":"A"}},"2025MBA010":{"n":"ASHISH LAKRA","s":"B","c":{"AIB":"","BAMD":"","DPM":"","GPP":"","IBS":"A","MPB":"B","PM":"B","SCM":"A","WAI":"B"}},"2025MBA011":{"n":"AVI ANAND HANS","s":"A","c":{"BAMD":"","CS":"A","DPM":"","DVB":"A","GPP":"","IBS":"A","MPB":"B","PM":"B"}},"2025MBA012":{"n":"AYUSHI KARADE","s":"A","c":{"BAMD":"","BBM":"","DVB":"A","GPP":"","IBS":"A","MPB":"B","PP":"A","WAI":"A"}},"2025MBA013":{"n":"BENDKHALE VINIT VIDYADHAR","s":"B","c":{"FPWM":"B","GPP":"","IBS":"B","PM":"A","PMA":"B","PP":"A","SAPM":"B"}},"2025MBA014":{"n":"CHOUDARY SONIKA","s":"B","c":{"DVB":"A","IBS":"A","MPB":"B","PM":"B","SAPM":"B","SCM":"B","WAI":"B"}},"2025MBA015":{"n":"DIBYASPITA BEHERA","s":"B","c":{"BBM":"","BM":"B","DVB":"A","GPP":"","IBS":"B","PMA":"B","PP":"A"}},"2025MBA016":{"n":"DIVAKAR YUKTA OMPRAKASH","s":"B","c":{"AMR":"","BM":"B","DVB":"A","IBS":"B","MPB":"B","PMA":"B","PP":"B"}},"2025MBA017":{"n":"ERAM JAMAL KHAN","s":"A","c":{"ADE":"","BBM":"","BM":"B","IB":"","OFD":"","PM":"B","SCM":"A","WAI":"A"}},"2025MBA018":{"n":"GANTEDA SAI SANTHOSH","s":"B","c":{"AMR":"","DPM":"","IBS":"B","MPB":"B","PM":"A","PMA":"B","PP":"A","SCM":"B"}},"2025MBA019":{"n":"HARINI S","s":"A","c":{"AMR":"","BBM":"","BM":"A","IBS":"A","MPB":"B","SCM":"A","WAI":"A"}},"2025MBA020":{"n":"HARSHIT JEMINI","s":"B","c":{"AIB":"","BM":"A","DVB":"A","FPWM":"B","MPB":"B","PMA":"B","PP":"B","WAI":"A"}},"2025MBA021":{"n":"JAGATHESWARAN P","s":"B","c":{"ADE":"","BBM":"","BM":"B","DPM":"","PMA":"B","PP":"A","SCM":"A","TCBA":""}},"2025MBA022":{"n":"JANMAY MAHESHWARI","s":"B","c":{"BM":"A","CS":"B","FPWM":"B","IB":"","PM":"B","SAPM":"B","WAI":"A"}},"2025MBA023":{"n":"JASMEET KAUR RAYAT","s":"B","c":{"BM":"B","CS":"B","FPWM":"B","GPP":"","PM":"B","SCM":"A","WAI":"A"}},"2025MBA024":{"n":"KARTIKEYA PATWARDHAN","s":"B","c":{"CS":"A","DPM":"","DVB":"A","OFD":"","PM":"B","SAPM":"B"}},"2025MBA025":{"n":"KEERTHANA A S","s":"B","c":{"BM":"A","CS":"B","FPWM":"B","GPP":"","IBS":"A","OFD":"","SAPM":"B"}},"2025MBA026":{"n":"KOLHE MRUNAL SATISH","s":"A","c":{"CS":"A","DPM":"","FPWM":"B","IBS":"A","OFD":"","SAPM":"B"}},"2025MBA027":{"n":"KYATAMWAR SURAJ SANTOSH","s":"A","c":{"BAMD":"","BM":"B","CS":"B","FPWM":"B","GPP":"","IBS":"A","SCM":"A","WAI":"A"}},"2025MBA028":{"n":"MANAN AGGARWAL","s":"A","c":{"BBM":"","BM":"A","IBS":"A","PM":"B","PP":"A","SCM":"A","WAI":"A"}},"2025MBA029":{"n":"MANAN MINHAS","s":"B","c":{"CS":"A","DVB":"A","FPWM":"B","GPP":"","IBS":"B","PM":"A","PMA":"B"}},"2025MBA030":{"n":"MANIK GAUTAM","s":"B","c":{"AMR":"","BM":"A","CS":"B","FPWM":"B","IBS":"B","PMA":"B","SAPM":"B"}},"2025MBA031":{"n":"MD SALEH AHMED","s":"B","c":{"AMR":"","BM":"A","CS":"B","PM":"B","PP":"A","SCM":"B","WAI":"A"}},"2025MBA032":{"n":"MOHIT WARDHAN","s":"B","c":{"AMR":"","BM":"B","DVB":"A","FPWM":"B","MPB":"B","PMA":"B","PP":"A","SCM":"B"}},"2025MBA033":{"n":"MUKESH KUMAR","s":"B","c":{"BM":"B","CS":"B","DVB":"A","FPWM":"B","OFD":"","PP":"B","SAPM":"B"}},"2025MBA034":{"n":"NEELKANTH SAXENA","s":"B","c":{"BBM":"","BM":"B","DPM":"","GPP":"","MPB":"B","PMA":"B","PP":"B","WAI":"B"}},"2025MBA035":{"n":"NIHAL PRASAD","s":"B","c":{"CS":"A","DVB":"A","FPWM":"B","IB":"","MPB":"B","OFD":"","PM":"B","SAPM":"B"}},"2025MBA036":{"n":"NIKHIL GOEL","s":"B","c":{"AIB":"","BAMD":"","BBM":"","CS":"A","DPM":"","GPP":"","MPB":"B","PM":"B","WAI":"B"}},"2025MBA037":{"n":"OM PRAKASH SINGH","s":"B","c":{"CS":"A","DVB":"A","IB":"","OFD":"","PM":"B","SAPM":"B","SCM":"B","WAI":"A"}},"2025MBA038":{"n":"PARTH NUTAN TAMBE","s":"B","c":{"BAMD":"","BM":"A","CS":"B","IBS":"B","MPB":"B","PM":"B","PMA":"B","WAI":"A"}},"2025MBA039":{"n":"PRANAV RAJ","s":"B","c":{"AIB":"","BAMD":"","FPWM":"B","GPP":"","PM":"A","PP":"A","SCM":"B","TCBA":"","WAI":"A"}},"2025MBA040":{"n":"PRATIBHA GUPTA","s":"A","c":{"ADE":"","BAMD":"","BM":"A","CS":"B","IBS":"A","MPB":"B","PM":"A","PP":"A","WAI":"A"}},"2025MBA041":{"n":"PRATIM GOSWAMI","s":"B","c":{"ADE":"","DVB":"A","FPWM":"B","IB":"","IBS":"A","PM":"A","SAPM":"B","SCM":"B"}},"2025MBA042":{"n":"PREETI KUMARI","s":"B","c":{"AMR":"","BBM":"","FPWM":"B","GPP":"","IB":"","PM":"A","SAPM":"B"}},"2025MBA043":{"n":"PURVI","s":"A","c":{"AMR":"","BBM":"","BM":"A","CS":"B","DVB":"A","GPP":"","IBS":"A","PP":"B"}},"2025MBA044":{"n":"RAHUL BHATIA","s":"B","c":{"AMR":"","BM":"B","FPWM":"B","GPP":"","IBS":"A","MPB":"B","TCBA":"","WAI":"A"}},"2025MBA045":{"n":"RASHI BANSAL","s":"A","c":{"CS":"A","DPM":"","FPWM":"B","IBS":"A","SAPM":"B","TCBA":""}},"2025MBA046":{"n":"RAVI RANJAN KUMAR","s":"A","c":{"BAMD":"","CS":"A","DVB":"A","PM":"A","PMA":"B","SCM":"B","TCBA":""}},"2025MBA047":{"n":"RISHIKA AGARWAL","s":"B","c":{"ADE":"","BAMD":"","CS":"A","PM":"B","PMA":"B","SCM":"B","WAI":"A"}},"2025MBA048":{"n":"RITIK RAJ TITORIA","s":"B","c":{"BM":"B","FPWM":"B","IBS":"B","OFD":"","PMA":"B","SAPM":"B"}},"2025MBA049":{"n":"RONALD TOPPO","s":"B","c":{"AMR":"","BM":"B","CS":"B","FPWM":"B","IBS":"B","PMA":"B"}},"2025MBA050":{"n":"RUTHVIK R M","s":"B","c":{"ADE":"","BM":"A","DVB":"A","PM":"B","PMA":"B","SCM":"B","WAI":"A"}},"2025MBA051":{"n":"RUTISHA NILESH SOYANTAR","s":"B","c":{"BBM":"","BM":"A","CS":"B","DPM":"","PM":"A","PMA":"B"}},"2025MBA052":{"n":"SAROJ ROHIT CHANDRA","s":"A","c":{"BM":"A","CS":"B","FPWM":"B","PM":"A","SAPM":"B","SCM":"A"}},"2025MBA053":{"n":"SAURISH SRIVASTAVA","s":"B","c":{"BM":"B","GPP":"","PM":"A","PMA":"B","PP":"A","SCM":"B","TCBA":""}},"2025MBA054":{"n":"SHIKHA MISHRA","s":"B","c":{"CS":"A","DVB":"A","FPWM":"B","PMA":"B","PP":"B","SAPM":"B","WAI":"A"}},"2025MBA055":{"n":"SHIVANI DHANADIYA","s":"B","c":{"BBM":"","BM":"B","DVB":"A","GPP":"","IB":"","IBS":"B","PMA":"B"}},"2025MBA056":{"n":"SHIVI MALHAN","s":"B","c":{"AMR":"","BBM":"","BM":"A","IBS":"B","PMA":"B","PP":"B","SAPM":"B"}},"2025MBA057":{"n":"SHREYA ALOK JAIN","s":"A","c":{"BAMD":"","CS":"A","DPM":"","PM":"A","SAPM":"B","SCM":"B"}},"2025MBA058":{"n":"SHREYA DEEPAK","s":"B","c":{"BBM":"","FPWM":"B","GPP":"","IBS":"A","MPB":"B","PP":"B","TCBA":"","WAI":"A"}},"2025MBA059":{"n":"SHREYA TANDON","s":"B","c":{"AMR":"","BM":"B","CS":"B","DVB":"A","IBS":"B","PMA":"B","WAI":"A"}},"2025MBA060":{"n":"SHRUTI SHUKLA","s":"B","c":{"BAMD":"","DVB":"A","PM":"B","PP":"A","SAPM":"B","SCM":"B","WAI":"A"}},"2025MBA061":{"n":"SIDDHANT SINGH","s":"A","c":{"CS":"A","DVB":"A","GPP":"","IB":"","IBS":"A","OFD":"","SAPM":"B"}},"2025MBA062":{"n":"SMRITI SINGH THAKUR","s":"B","c":{"AIB":"","BM":"A","CS":"B","PM":"A","PP":"A","SCM":"B","TCBA":""}},"2025MBA063":{"n":"SNEHA ALDA","s":"B","c":{"AMR":"","BM":"B","DPM":"","DVB":"A","PMA":"B","PP":"B","WAI":"B"}},"2025MBA064":{"n":"SHUBHASHA PRIYALI AWASTHI","s":"B","c":{"BBM":"","CS":"A","FPWM":"B","GPP":"","IB":"","OFD":"","SAPM":"B"}},"2025MBA065":{"n":"SUBHCHANDAN DAS","s":"B","c":{"AMR":"","BAMD":"","DPM":"","FPWM":"B","OFD":"","PMA":"B"}},"2025MBA066":{"n":"SUDHANSHU AGRAWAL","s":"A","c":{"AIB":"","BBM":"","BM":"A","DVB":"A","GPP":"","IBS":"A","MPB":"B","PP":"B","WAI":"A"}},"2025MBA067":{"n":"SUMANT KUMAR","s":"B","c":{"BBM":"","BM":"B","DPM":"","PMA":"B","PP":"A","SCM":"A","WAI":"B"}},"2025MBA068":{"n":"SUMEET SINGH","s":"B","c":{"AMR":"","BAMD":"","DVB":"A","PM":"B","PP":"A","SAPM":"B","SCM":"B","WAI":"A"}},"2025MBA069":{"n":"SUNAYNA JAIN","s":"B","c":{"AMR":"","BM":"B","CS":"B","DVB":"A","IBS":"A","PP":"B","SAPM":"B","WAI":"A"}},"2025MBA070":{"n":"SURAJ KUMAR MINA","s":"B","c":{"CS":"A","DVB":"A","FPWM":"B","PM":"A","PMA":"B","SCM":"B"}},"2025MBA071":{"n":"SWARNADIP PRAMANIK","s":"B","c":{"BAMD":"","CS":"A","DVB":"A","FPWM":"B","IB":"","OFD":"","SAPM":"B"}},"2025MBA072":{"n":"SWASTIK PANIGRAHI","s":"A","c":{"ADE":"","AIB":"","CS":"A","DVB":"A","PM":"A","SCM":"B","TCBA":""}},"2025MBA073":{"n":"SWOSTIK MOHAPATRA","s":"A","c":{"ADE":"","AIB":"","BAMD":"","DPM":"","IBS":"A","PM":"A","SCM":"A"}},"2025MBA074":{"n":"VAIBHAV MADAN","s":"B","c":{"BAMD":"","DPM":"","MPB":"A","OFD":"","PMA":"B","SAPM":"B","TCBA":"","WAI":"B"}},"2025MBA075":{"n":"VANDITA SHUKLA","s":"B","c":{"AMR":"","BM":"B","CS":"B","DPM":"","GPP":"","MPB":"B","PP":"A","SCM":"B","WAI":"B"}},"2025MBA076":{"n":"AAKASH","s":"A","c":{"AMR":"","CS":"A","DVB":"A","GPP":"","IBS":"A","MPB":"B","PM":"A"}},"2025MBA077":{"n":"AAYUSH JHA","s":"B","c":{"BM":"A","FPWM":"B","GPP":"","IB":"","IBS":"A","MPB":"B","OFD":"","PP":"B","SAPM":"B"}},"2025MBA078":{"n":"ABHISHEK SWALSINGH","s":"B","c":{"BBM":"","BM":"B","GPP":"","IBS":"A","PM":"B","PP":"B","SAPM":"B","WAI":"A"}},"2025MBA079":{"n":"ADITHYA DEVA T S","s":"B","c":{"AIB":"","DVB":"A","FPWM":"B","IB":"","IBS":"B","PMA":"B","SCM":"B"}},"2025MBA080":{"n":"ADITYA NARAYAN DUTTA","s":"A","c":{"ADE":"","CS":"A","DVB":"A","PM":"A","PP":"A","SAPM":"B","SCM":"B"}},"2025MBA081":{"n":"AKASH KUMAR","s":"B","c":{"ADE":"","DPM":"","IBS":"B","MPB":"A","PM":"B","PP":"A","SCM":"B","TCBA":""}},"2025MBA082":{"n":"ALEX ABRAHAM ROY","s":"B","c":{"DVB":"A","FPWM":"B","OFD":"","PM":"B","SAPM":"B","SCM":"A","WAI":"A"}},"2025MBA083":{"n":"ALISHA GUPTA","s":"B","c":{"FPWM":"B","GPP":"","IB":"","IBS":"A","PM":"A","SAPM":"B","SCM":"B"}},"2025MBA084":{"n":"ANKIT RAHANGDALE","s":"B","c":{"BM":"B","CS":"B","DPM":"","DVB":"A","IBS":"A","PP":"B","WAI":"B"}},"2025MBA085":{"n":"BANOTH NEELESH NAIK","s":"A","c":{"BBM":"","BM":"A","CS":"B","DVB":"A","GPP":"","PP":"A","SCM":"A","WAI":"A"}},"2025MBA086":{"n":"BHARGAV SONOWAL","s":"A","c":{"CS":"A","DVB":"A","FPWM":"B","IBS":"A","OFD":"","SAPM":"B","TCBA":""}},"2025MBA087":{"n":"BHUPENDRA SINGH","s":"B","c":{"AIB":"","BAMD":"","CS":"A","GPP":"","IB":"","MPB":"B","OFD":"","SAPM":"B"}},"2025MBA088":{"n":"BUDDA ANGEL GREY","s":"A","c":{"AMR":"","BBM":"","BM":"A","PM":"A","PMA":"B","TCBA":""}},"2025MBA090":{"n":"DEBARATI SAMADDER","s":"B","c":{"ADE":"","AMR":"","BM":"B","DVB":"A","IBS":"A","PM":"B","PP":"A","SCM":"B"}},"2025MBA091":{"n":"DHAVAL HARENDRA MISTRY","s":"B","c":{"BM":"B","CS":"B","IB":"","IBS":"A","OFD":"","PP":"A","SAPM":"A","SCM":"B"}},"2025MBA092":{"n":"DIKSHA ARUN INGLE","s":"A","c":{"BBM":"","BM":"A","CS":"B","DPM":"","IBS":"A","PM":"B","SCM":"A"}},"2025MBA093":{"n":"DIKSHITA DUTTA","s":"A","c":{"BAMD":"","BM":"A","DVB":"A","IBS":"B","MPB":"A","PMA":"B","WAI":"A"}},"2025MBA094":{"n":"DIVYA KHARIWAL","s":"A","c":{"BM":"A","CS":"B","DVB":"A","MPB":"A","PM":"B","PMA":"B","PP":"B","WAI":"A"}},"2025MBA095":{"n":"DOGGA PRAVALLIKA","s":"B","c":{"AMR":"","BBM":"","BM":"B","FPWM":"B","PM":"A","PMA":"B"}},"2025MBA096":{"n":"GANESH SINGH RAJPOOT","s":"B","c":{"ADE":"","DVB":"A","IBS":"B","PM":"A","PMA":"B","PP":"A","SCM":"B"}},"2025MBA097":{"n":"GEDAM HIMANSHU PRADEEP","s":"A","c":{"BAMD":"","DPM":"","PM":"A","PMA":"B","SCM":"A","TCBA":""}},"2025MBA098":{"n":"HEMANSHU BHATT","s":"A","c":{"CS":"A","IB":"","MPB":"A","OFD":"","PM":"B","SAPM":"A","SCM":"B","WAI":"A"}},"2025MBA099":{"n":"HONEY SHREYA","s":"B","c":{"AMR":"","BBM":"","BM":"A","CS":"B","PMA":"B","PP":"B","WAI":"A"}},"2025MBA100":{"n":"HRITIK PRAKASH","s":"A","c":{"AIB":"","CS":"A","DVB":"A","FPWM":"B","IB":"","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA101":{"n":"ISHA PANDEY","s":"A","c":{"CS":"A","IB":"","MPB":"A","OFD":"","PM":"B","SAPM":"A","SCM":"A","WAI":"A"}},"2025MBA102":{"n":"JAHNVI CHOUREY","s":"B","c":{"BM":"B","CS":"B","DPM":"","IBS":"A","MPB":"A","PP":"B","SAPM":"B","TCBA":""}},"2025MBA103":{"n":"JEET DETROJA","s":"B","c":{"BAMD":"","BBM":"","BM":"B","CS":"B","DVB":"A","MPB":"A","PMA":"B","PP":"B"}},"2025MBA104":{"n":"JYOTIPRAKASH SAHOO","s":"B","c":{"DVB":"A","FPWM":"B","OFD":"","PM":"B","PMA":"A","SAPM":"A","SCM":"B"}},"2025MBA105":{"n":"KETAN GUPTA","s":"B","c":{"ADE":"","BAMD":"","BBM":"","CS":"A","DPM":"","GPP":"","MPB":"B","PM":"B","PP":"A"}},"2025MBA106":{"n":"KHUSHI SHARMA","s":"A","c":{"AIB":"","DVB":"A","IB":"","IBS":"A","MPB":"A","OFD":"","SAPM":"B","TCBA":""}},"2025MBA107":{"n":"KHUSHI SINGH","s":"B","c":{"AMR":"","BM":"A","DVB":"A","IBS":"B","PMA":"B","PP":"A","SCM":"B"}},"2025MBA108":{"n":"KIRTI KUMARI TIBREWALA","s":"B","c":{"BAMD":"","BM":"A","CS":"B","DVB":"A","FPWM":"B","IB":"","MPB":"A","SAPM":"B"}},"2025MBA109":{"n":"KSHITIJ MILIND LAD","s":"A","c":{"AIB":"","BBM":"","CS":"A","FPWM":"B","IBS":"A","TCBA":"","WAI":"A"}},"2025MBA110":{"n":"LIPI GANGAWAT","s":"A","c":{"BBM":"","CS":"A","DVB":"A","GPP":"","IBS":"B","PMA":"B","WAI":"A"}},"2025MBA111":{"n":"LOKJEET SINGH NIRANJAN","s":"A","c":{"ADE":"","CS":"A","DVB":"A","OFD":"","PM":"B","SAPM":"A","SCM":"A"}},"2025MBA112":{"n":"M SHRUTI REDDY","s":"B","c":{"BM":"B","CS":"B","IBS":"B","MPB":"A","PM":"A","PMA":"B","PP":"A","SCM":"B"}},"2025MBA113":{"n":"MALAY CHAUREY","s":"A","c":{"AMR":"","BBM":"","BM":"A","DVB":"A","PMA":"B","PP":"A","SCM":"A"}},"2025MBA114":{"n":"MANOJKUMAR R","s":"A","c":{"AIB":"","AMR":"","CS":"A","DVB":"A","MPB":"A","PMA":"B","SCM":"B","TCBA":""}},"2025MBA115":{"n":"MAYANK SOOD","s":"A","c":{"BAMD":"","CS":"A","FPWM":"B","IB":"","IBS":"A","MPB":"A","SAPM":"B","WAI":"A"}},"2025MBA116":{"n":"MEGHA LV","s":"A","c":{"ADE":"","BBM":"","CS":"A","DVB":"A","FPWM":"B","GPP":"","IB":"","WAI":"A"}},"2025MBA117":{"n":"NAMAN SHARAD GUPTA","s":"A","c":{"ADE":"","AMR":"","CS":"A","IBS":"A","PM":"A","SAPM":"A","SCM":"A","WAI":"A"}},"2025MBA118":{"n":"NAVYA BHANDARI","s":"B","c":{"BBM":"","BM":"B","CS":"B","DVB":"A","MPB":"A","PMA":"B","PP":"B","WAI":"A"}},"2025MBA119":{"n":"NAVYA PALIWAL","s":"A","c":{"BM":"B","CS":"B","DVB":"A","IB":"","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA120":{"n":"NISHESH CHOUDHARY","s":"B","c":{"ADE":"","BM":"B","IBS":"B","PM":"A","PMA":"B","PP":"A","SCM":"B"}},"2025MBA121":{"n":"PATIL SWAPNIL PRALHAD","s":"B","c":{"BBM":"","BM":"A","DVB":"A","FPWM":"B","IBS":"B","PMA":"B"}},"2025MBA122":{"n":"PATRI MANASA","s":"B","c":{"BM":"B","CS":"B","DPM":"","PM":"A","PMA":"B","SCM":"B","TCBA":""}},"2025MBA123":{"n":"PRERNA KUMARI","s":"B","c":{"BM":"B","CS":"B","DVB":"A","GPP":"","IB":"","MPB":"B","PMA":"B","SAPM":"A"}},"2025MBA124":{"n":"PRINCE SHUKLA","s":"A","c":{"CS":"A","FPWM":"A","IB":"","MPB":"A","OFD":"","PM":"B","SAPM":"A","SCM":"B"}},"2025MBA125":{"n":"RAMAVATHU HARIKA BAI","s":"A","c":{"AIB":"","AMR":"","BM":"B","GPP":"","PM":"B","SCM":"A","TCBA":"","WAI":"A"}},"2025MBA126":{"n":"RITHU K","s":"A","c":{"AMR":"","BM":"B","DVB":"A","FPWM":"A","GPP":"","IBS":"A","WAI":"A"}},"2025MBA127":{"n":"ROHIT KUMAR BAA","s":"A","c":{"BBM":"","CS":"A","DVB":"A","FPWM":"A","GPP":"","IBS":"A","PP":"B"}},"2025MBA128":{"n":"ROKADIA ZULFIQAR MAZAHIRBHAI","s":"A","c":{"CS":"A","IB":"","IBS":"A","MPB":"A","OFD":"","PM":"B","SAPM":"A","SCM":"A"}},"2025MBA129":{"n":"RUCHI KUMARI","s":"B","c":{"BAMD":"","BBM":"","DPM":"","DVB":"B","PM":"B","SCM":"A"}},"2025MBA130":{"n":"SABIT ABDUL KHADER","s":"A","c":{"ADE":"","CS":"A","DPM":"","IBS":"A","MPB":"A","PM":"A","SCM":"A"}},"2025MBA131":{"n":"SAGAR","s":"B","c":{"AIB":"","BAMD":"","DVB":"B","PM":"B","PMA":"B","SCM":"A","WAI":"A"}},"2025MBA132":{"n":"SAKSHI MIRE","s":"A","c":{"AMR":"","BBM":"","DPM":"","DVB":"A","IBS":"A","MPB":"A","PP":"B"}},"2025MBA133":{"n":"SAURABH SANJAY BHURE","s":"A","c":{"BAMD":"","DVB":"B","FPWM":"B","IB":"","IBS":"A","MPB":"A","OFD":"","WAI":"A"}},"2025MBA134":{"n":"SHANTANU SINGH","s":"B","c":{"AIB":"","DPM":"","GPP":"","MPB":"B","PM":"B","PMA":"B","SCM":"A","WAI":"B"}},"2025MBA136":{"n":"SHASHIKANT SAGAR","s":"A","c":{"ADE":"","AMR":"","BBM":"","BM":"A","CS":"B","GPP":"","OFD":"","PP":"A","SAPM":"A","WAI":"A"}},"2025MBA137":{"n":"SHENON BERT S","s":"A","c":{"AIB":"","CS":"A","DVB":"B","FPWM":"A","IB":"","IBS":"A","SAPM":"A"}},"2025MBA138":{"n":"SHIFALI SHANKAR","s":"B","c":{"BAMD":"","DVB":"B","FPWM":"B","GPP":"","OFD":"","SAPM":"B","TCBA":""}},"2025MBA139":{"n":"SHIRLEY ELISHA A","s":"B","c":{"AIB":"","BM":"A","DPM":"","DVB":"B","GPP":"","PMA":"B","TCBA":""}},"2025MBA140":{"n":"SHREYA MALLIK","s":"A","c":{"CS":"A","DVB":"B","FPWM":"A","IBS":"A","PM":"A","SAPM":"A","SCM":"A"}},"2025MBA141":{"n":"SHUBHAM SINGH","s":"B","c":{"AIB":"","BAMD":"","BBM":"","FPWM":"B","IB":"","PMA":"A","SAPM":"B"}},"2025MBA142":{"n":"SHUBHAM SINGH","s":"A","c":{"AMR":"","BBM":"","BM":"A","PM":"A","PMA":"A","SCM":"A"}},"2025MBA143":{"n":"SMARAK BHADRA","s":"A","c":{"BM":"A","CS":"B","FPWM":"A","IBS":"A","MPB":"A","OFD":"","PM":"B","PP":"A"}},"2025MBA144":{"n":"SMRITY MAURYA","s":"A","c":{"BM":"B","FPWM":"A","GPP":"","IB":"","IBS":"A","MPB":"B","PP":"A","SAPM":"A"}},"2025MBA145":{"n":"SRIJAN SAHA","s":"A","c":{"AMR":"","BAMD":"","CS":"A","DPM":"","PMA":"A","TCBA":""}},"2025MBA146":{"n":"SURAJ PANDA","s":"B","c":{"AMR":"","BM":"B","GPP":"","IBS":"B","PM":"A","PMA":"B","PP":"B"}},"2025MBA147":{"n":"TANISHA MITTAL","s":"B","c":{"BAMD":"","CS":"A","DVB":"B","FPWM":"B","IB":"","IBS":"A","SAPM":"B"}},"2025MBA148":{"n":"TERKHEDKAR OMKAR ANANT","s":"A","c":{"DPM":"","DVB":"B","FPWM":"A","OFD":"","PMA":"A","SAPM":"A"}},"2025MBA149":{"n":"VIPIN KUMAR","s":"B","c":{"ADE":"","BAMD":"","DVB":"B","IBS":"B","MPB":"A","PM":"A","PMA":"B","SCM":"B"}},"2025MBA150":{"n":"WILSON TOPPO","s":"A","c":{"AIB":"","AMR":"","BBM":"","BM":"B","FPWM":"A","MPB":"A","PMA":"A","PP":"B"}},"2025MBA151":{"n":"AANCHAL TEMBHARE","s":"B","c":{"AIB":"","BBM":"","GPP":"","IBS":"B","PM":"B","PMA":"B","PP":"B","WAI":"A"}},"2025MBA152":{"n":"ABHINAV H","s":"A","c":{"CS":"A","DPM":"","FPWM":"B","MPB":"A","PM":"A","SCM":"B","TCBA":""}},"2025MBA153":{"n":"ADDAPUSEELA SAI NIKHIL KUMAR","s":"A","c":{"ADE":"","AIB":"","CS":"A","DVB":"B","PM":"A","SCM":"A","TCBA":""}},"2025MBA154":{"n":"ADITYA TIWARI","s":"A","c":{"ADE":"","BAMD":"","DVB":"B","IBS":"A","PM":"A","SCM":"A","WAI":"A"}},"2025MBA155":{"n":"ANUPAMA LOKHANDE","s":"B","c":{"AMR":"","BM":"B","DVB":"A","IBS":"B","PMA":"B","PP":"B","WAI":"A"}},"2025MBA156":{"n":"ARCHANA DUBEY","s":"B","c":{"BM":"A","CS":"B","PM":"B","PMA":"A","PP":"A","SCM":"B","WAI":"A"}},"2025MBA157":{"n":"ATUL RASTOGI","s":"A","c":{"DPM":"","FPWM":"A","IB":"","IBS":"A","PM":"B","SAPM":"A","WAI":"B"}},"2025MBA158":{"n":"BANAGIRI KEERTHI REDDY","s":"B","c":{"DPM":"","GPP":"","MPB":"B","PM":"B","PMA":"A","SCM":"A","TCBA":"","WAI":"B"}},"2025MBA160":{"n":"BHIVGADE HIMANSHU HARIRAM","s":"A","c":{"CS":"A","DPM":"","FPWM":"A","IBS":"A","OFD":"","SAPM":"A"}},"2025MBA161":{"n":"BHUKYA PARMESH","s":"A","c":{"CS":"A","FPWM":"A","GPP":"","IB":"","IBS":"A","MPB":"B","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA162":{"n":"CHANDAK AAYUSH BHIKAMCHAND","s":"A","c":{"ADE":"","CS":"A","DVB":"B","PM":"A","PMA":"A","PP":"A","SCM":"B"}},"2025MBA163":{"n":"CINEDIN SALIM","s":"A","c":{"CS":"A","DPM":"","FPWM":"A","MPB":"A","PM":"B","SAPM":"A","SCM":"B"}},"2025MBA164":{"n":"D SINDHU","s":"A","c":{"BBM":"","BM":"B","DPM":"","DVB":"B","GPP":"","IBS":"A","SCM":"A"}},"2025MBA165":{"n":"DARSHAN KUMAR VERMA","s":"B","c":{"FPWM":"A","IB":"","IBS":"B","MPB":"A","PMA":"B","PP":"A","SCM":"B","WAI":"A"}},"2025MBA166":{"n":"DHARWAR AHMAR SUMIR","s":"B","c":{"AMR":"","BM":"B","CS":"B","DPM":"","IBS":"B","MPB":"A","PMA":"B","PP":"B"}},"2025MBA167":{"n":"EJAZ BADRUDDIN JINDRAN","s":"A","c":{"AMR":"","FPWM":"A","IB":"","IBS":"A","OFD":"","SAPM":"A","SCM":"A"}},"2025MBA168":{"n":"GAURAV SHEKHAR SINGH","s":"A","c":{"CS":"A","DVB":"B","FPWM":"A","MPB":"A","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA169":{"n":"ISHWARI KORE","s":"A","c":{"BBM":"","BM":"A","FPWM":"A","GPP":"","IBS":"B","PMA":"B","WAI":"A"}},"2025MBA170":{"n":"JOLLY GARG","s":"A","c":{"ADE":"","BBM":"","CS":"A","IBS":"A","MPB":"A","PM":"A","PP":"A","SCM":"A"}},"2025MBA172":{"n":"JYOTHSNA KADANKOT","s":"B","c":{"BBM":"","BM":"B","GPP":"","IBS":"B","MPB":"B","PMA":"B","PP":"B","WAI":"A"}},"2025MBA173":{"n":"K MANENI","s":"B","c":{"BM":"B","DPM":"","DVB":"B","IBS":"B","PMA":"B","PP":"B","WAI":"B"}},"2025MBA174":{"n":"KARTIK AGARWAL","s":"A","c":{"BM":"B","FPWM":"A","GPP":"","IB":"","IBS":"A","MPB":"B","PP":"B","SAPM":"A"}},"2025MBA175":{"n":"KARTIK NIRMAN","s":"A","c":{"AIB":"","FPWM":"A","GPP":"","IB":"","IBS":"A","MPB":"B","PP":"B","SAPM":"A","WAI":"A"}},"2025MBA176":{"n":"KHUSHI AGRAWAL","s":"A","c":{"BM":"B","CS":"B","FPWM":"A","GPP":"","IBS":"A","SAPM":"A","SCM":"A"}},"2025MBA177":{"n":"KISHAN RAJ","s":"A","c":{"BAMD":"","BM":"A","CS":"B","DVB":"B","PM":"A","PMA":"A","SCM":"A"}},"2025MBA178":{"n":"KOTHURI JYOTHI","s":"A","c":{"AMR":"","BBM":"","BM":"B","PM":"A","PMA":"A","TCBA":""}},"2025MBA179":{"n":"KRITIKA RATHI","s":"A","c":{"AMR":"","BM":"B","IBS":"A","MPB":"A","PM":"A","PP":"B","SAPM":"A","WAI":"A"}},"2025MBA180":{"n":"MALHOTRA RISHITA DEEPAK","s":"A","c":{"ADE":"","AIB":"","BAMD":"","DPM":"","MPB":"A","PM":"A","PP":"A","SCM":"B"}},"2025MBA181":{"n":"MANISH ORAON","s":"B","c":{"MPB":"B"}},"2025MBA182":{"n":"MEET BHARTI","s":"A","c":{"AIB":"","FPWM":"A","GPP":"","IBS":"B","MPB":"B","PMA":"B","SAPM":"A","WAI":"A"}},"2025MBA183":{"n":"MOHAMMAD KAIF MAHEBOOB MANGRULE","s":"A","c":{"ADE":"","AIB":"","AMR":"","BBM":"","BM":"B","IBS":"A","SCM":"A"}},"2025MBA184":{"n":"NADIMETLA CHAITHANYA","s":"A","c":{"CS":"A","DPM":"","GPP":"","IBS":"A","MPB":"B","PM":"A","SCM":"A","TCBA":""}},"2025MBA185":{"n":"NAMAN VERMA","s":"A","c":{"AMR":"","BM":"A","FPWM":"A","IB":"","IBS":"A","SAPM":"A","SCM":"A"}},"2025MBA186":{"n":"NANCY CHHATRASAL","s":"B","c":{"BM":"B","CS":"B","DVB":"B","PMA":"A","PP":"A","SCM":"B","WAI":"A"}},"2025MBA187":{"n":"NANDNI JAIN","s":"B","c":{"BAMD":"","BM":"B","CS":"B","FPWM":"B","IBS":"A","MPB":"A","PP":"B","WAI":"A"}},"2025MBA188":{"n":"NEHA KUMARI","s":"A","c":{"BM":"A","CS":"B","PM":"A","PMA":"A","SAPM":"A","SCM":"A"}},"2025MBA189":{"n":"NODAGALA SAI KIREETY","s":"B","c":{"BM":"A","DPM":"","GPP":"","IBS":"B","MPB":"B","PMA":"B","PP":"A","SCM":"B"}},"2025MBA190":{"n":"P N SAIVAMSHI","s":"A","c":{"BAMD":"","DPM":"","DVB":"B","PM":"A","PMA":"A","TCBA":""}},"2025MBA191":{"n":"PARTH SRIVASTAVA","s":"B","c":{"AIB":"","BM":"B","CS":"B","PM":"B","PP":"A","SCM":"B","TCBA":""}},"2025MBA192":{"n":"PAYAL SHARMA","s":"A","c":{"DVB":"B","FPWM":"A","GPP":"","IB":"","OFD":"","PP":"B","SAPM":"A","WAI":"A"}},"2025MBA193":{"n":"PRANAV KUSUMKAR","s":"B","c":{"AMR":"","DPM":"","FPWM":"B","PMA":"A","PP":"B","SAPM":"B","TCBA":"","WAI":"B"}},"2025MBA194":{"n":"PRERNA AHIRWAR","s":"A","c":{"AMR":"","BBM":"","BM":"A","CS":"B","GPP":"","PMA":"A","WAI":"A"}},"2025MBA195":{"n":"PRERNA BHATT","s":"B","c":{"BAMD":"","DVB":"B","IBS":"B","PM":"A","PMA":"B","SCM":"A"}},"2025MBA196":{"n":"RAMAVATH PRAVEEN KUMAR","s":"B","c":{"ADE":"","AIB":"","AMR":"","BAMD":"","DPM":"","IBS":"A","PP":"A","SCM":"B","WAI":"B"}},"2025MBA197":{"n":"RANE VAISHNAVI RAHUL","s":"A","c":{"ADE":"","AIB":"","DPM":"","FPWM":"B","PM":"A","PMA":"A","SCM":"A"}},"2025MBA198":{"n":"RASHI AGARWAL","s":"A","c":{"CS":"A","FPWM":"A","GPP":"","IB":"","PMA":"A","PP":"A","SAPM":"A","SCM":"B"}},"2025MBA199":{"n":"RAVEENAROY. V","s":"A","c":{"BM":"A","DVB":"B","FPWM":"A","GPP":"","IBS":"A","PP":"A","SCM":"B"}},"2025MBA200":{"n":"ROMANIUS TIRKEY","s":"B","c":{"AMR":"","BM":"A","DVB":"A","FPWM":"B","PM":"B","TCBA":""}},"2025MBA201":{"n":"ROMILA BASAV","s":"B","c":{"ADE":"","DPM":"","DVB":"B","IBS":"B","PM":"B","PMA":"B","WAI":"B"}},"2025MBA202":{"n":"SACHIN KUMAR","s":"A","c":{"AMR":"","BM":"A","CS":"B","IBS":"A","PM":"B","SCM":"A"}},"2025MBA203":{"n":"SAGAR SINGH","s":"B","c":{"ADE":"","CS":"A","IBS":"B","PM":"A","PMA":"B","PP":"A","SCM":"B"}},"2025MBA204":{"n":"SARATH S RAVEENDRAN","s":"A","c":{"AIB":"","BM":"A","CS":"B","FPWM":"A","GPP":"","MPB":"B","PMA":"A","WAI":"A"}},"2025MBA205":{"n":"SASWAT SARANGI","s":"A","c":{"CS":"A","GPP":"","IB":"","IBS":"A","MPB":"B","OFD":"","PP":"A","SAPM":"A","SCM":"B"}},"2025MBA206":{"n":"SHANTANU BISHT","s":"B","c":{"ADE":"","BAMD":"","BM":"B","DPM":"","FPWM":"B","PP":"A","TCBA":""}},"2025MBA207":{"n":"SHIVAM AGARWAL","s":"A","c":{"BBM":"","BM":"A","DVB":"B","FPWM":"A","GPP":"","IBS":"A","WAI":"A"}},"2025MBA208":{"n":"SHREYA PRAMOD SORTE","s":"B","c":{"BM":"B","DVB":"B","GPP":"","IBS":"B","PM":"A","PMA":"B","SCM":"A"}},"2025MBA209":{"n":"SHRIYA SAMANVITA VELLANKI","s":"A","c":{"DVB":"B","FPWM":"A","IB":"","OFD":"","PMA":"A","PP":"B","SAPM":"A","WAI":"A"}},"2025MBA210":{"n":"SHUBHAM KUMAR MISHRA","s":"A","c":{"BBM":"","FPWM":"A","IB":"","IBS":"B","MPB":"A","PMA":"B","SAPM":"A"}},"2025MBA211":{"n":"SHUKLA SHIVAM RAJENDRA","s":"A","c":{"ADE":"","BBM":"","BM":"A","DPM":"","DVB":"B","IB":"","SCM":"A"}},"2025MBA212":{"n":"SOLANKI PARTH DHIRUBHAI","s":"A","c":{"ADE":"","BAMD":"","DVB":"B","IBS":"A","PM":"B","SCM":"A","WAI":"A"}},"2025MBA214":{"n":"SUNITI BISWAS","s":"A","c":{"ADE":"","CS":"A","DVB":"B","IB":"","SAPM":"B","SCM":"A","TCBA":"","WAI":"A"}},"2025MBA215":{"n":"TEEPARTI TEJ AKASH","s":"B","c":{"BAMD":"","BBM":"","BM":"B","DPM":"","PMA":"A","TCBA":"","WAI":"B"}},"2025MBA216":{"n":"TELUGU UDAY KIRAN","s":"A","c":{"CS":"A","DVB":"B","FPWM":"A","GPP":"","IB":"","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA217":{"n":"THYAGARAAJAN PRASANNA","s":"A","c":{"BBM":"","BM":"B","FPWM":"A","OFD":"","PMA":"A","PP":"B","WAI":"A"}},"2025MBA219":{"n":"UTKARSH KOURAV","s":"B","c":{"CS":"A","DPM":"","MPB":"A","PM":"B","SAPM":"B","SCM":"A","TCBA":"","WAI":"B"}},"2025MBA220":{"n":"UTSAB KUMAR PRADHAN","s":"B","c":{"ADE":"","AMR":"","BM":"B","IBS":"B","MPB":"A","PMA":"B","PP":"A","SCM":"B","WAI":"B"}},"2025MBA221":{"n":"VANKUDOTH ANUSH NAIK","s":"B","c":{"ADE":"","AIB":"","AMR":"","BAMD":"","DPM":"","IBS":"A","PP":"A","SCM":"B","WAI":"B"}},"2025MBA222":{"n":"VARTIKA BAHUGUNA","s":"B","c":{"ADE":"","BAMD":"","BM":"B","CS":"B","DPM":"","MPB":"A","PMA":"A"}},"2025MBA223":{"n":"VIBHAV KHANDELWAL","s":"B","c":{"BM":"A","CS":"B","DVB":"B","PP":"A","SAPM":"A","SCM":"B","WAI":"B"}},"2025MBA224":{"n":"VINAYAK TALUKDER","s":"B","c":{"BM":"A","DPM":"","IBS":"B","MPB":"A","PMA":"B","TCBA":"","WAI":"B"}},"2025MBA225":{"n":"WASIF ULLAH RAKIB RAZA","s":"A","c":{"ADE":"","BAMD":"","BBM":"","PM":"B","PMA":"A","SCM":"A","WAI":"B"}},"2025MBA226":{"n":"AAKANKSHA CHOUDHARY","s":"A","c":{"BM":"B","DVB":"B","FPWM":"A","IB":"","MPB":"A","OFD":"","SAPM":"A"}},"2025MBA227":{"n":"ABHISHAK PYLA","s":"B","c":{"BAMD":"","BBM":"","BM":"B","DPM":"","PM":"A","PMA":"A","SAPM":"B"}},"2025MBA228":{"n":"ADITYA BAHADUR PAL","s":"B","c":{"CS":"A","DVB":"B","PMA":"A","PP":"A","SAPM":"B","SCM":"B","TCBA":""}},"2025MBA229":{"n":"ADITYA GORE","s":"A","c":{"ADE":"","CS":"A","DPM":"","DVB":"B","FPWM":"B","MPB":"A","PMA":"A","TCBA":""}},"2025MBA230":{"n":"ADITYA NATH RAO","s":"A","c":{"ADE":"","BM":"A","DPM":"","DVB":"B","FPWM":"B","GPP":"","PM":"A","PMA":"A"}},"2025MBA231":{"n":"AKASH C","s":"A","c":{"BM":"A","DVB":"B","FPWM":"A","OFD":"","PMA":"A","PP":"B","WAI":"A"}},"2025MBA232":{"n":"AMAN KUMAR ANKUR","s":"B","c":{"BBM":"","FPWM":"B","IBS":"B","PMA":"B","PP":"B","TCBA":"","WAI":"B"}},"2025MBA233":{"n":"AMREEN SHEIKH","s":"B","c":{"AMR":"","BAMD":"","BM":"B","DVB":"A","FPWM":"B","PMA":"A","SAPM":"B"}},"2025MBA234":{"n":"ANSHUL BHARTI","s":"B","c":{"BBM":"","GPP":"","MPB":"B","OFD":"","PM":"B","SAPM":"B","TCBA":""}},"2025MBA235":{"n":"ANUBHAV SINGH","s":"A","c":{"DVB":"B","FPWM":"A","IB":"","IBS":"A","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA236":{"n":"ANUJ TRIPATHI","s":"B","c":{"BBM":"","BM":"B","DVB":"B","FPWM":"A","IB":"","IBS":"A","WAI":"B"}},"2025MBA237":{"n":"ARCHISMITA DAS","s":"A","c":{"BBM":"","BM":"B","CS":"B","PM":"A","PMA":"A","SCM":"A"}},"2025MBA238":{"n":"ASHISH KUMAR SINGH","s":"A","c":{"BAMD":"","BM":"A","CS":"B","PM":"A","SAPM":"B","SCM":"A","TCBA":""}},"2025MBA239":{"n":"BHANDARI VAISHNAVI SANJAY","s":"B","c":{"ADE":"","AMR":"","IB":"","OFD":"","PM":"B","SAPM":"B","SCM":"A","TCBA":""}},"2025MBA240":{"n":"BHAVISHA SHARMA","s":"A","c":{"BBM":"","DVB":"B","FPWM":"A","IB":"","IBS":"A","SAPM":"A","WAI":"B"}},"2025MBA241":{"n":"BHUSE TEJAS YASHAWANT","s":"B","c":{"BBM":"","CS":"A","DPM":"","IBS":"B","PM":"A","PMA":"B"}},"2025MBA242":{"n":"CHETNA MARKAM","s":"A","c":{"CS":"A"}},"2025MBA243":{"n":"D SANGAVI","s":"A","c":{"AIB":"","AMR":"","BBM":"","DPM":"","MPB":"A","SCM":"A","TCBA":"","WAI":"B"}},"2025MBA244":{"n":"DEEPAK MURMU","s":"B","c":{"BAMD":"","DPM":"","DVB":"B","PM":"A","SCM":"B","TCBA":""}},"2025MBA245":{"n":"DEVARLA SAITEJA","s":"A","c":{"AIB":"","CS":"A","DVB":"B","FPWM":"A","IB":"","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA246":{"n":"DIBYA SINGH SAMANTA","s":"B","c":{"BAMD":"","BM":"B","CS":"B","DVB":"B","PM":"A","TCBA":""}},"2025MBA247":{"n":"DONA SAHA","s":"A","c":{"AMR":"","DVB":"A","FPWM":"A","IB":"","OFD":"","PMA":"A","SAPM":"A"}},"2025MBA248":{"n":"GAGAN MALIK","s":"A","c":{"BAMD":"","CS":"A","DPM":"","MPB":"A","PM":"B","PMA":"A","WAI":"B"}},"2025MBA249":{"n":"GARGI SHREEPAD PARKHE","s":"B","c":{"BBM":"","BM":"A","FPWM":"A","GPP":"","IBS":"B","MPB":"B","PMA":"B","PP":"B"}},"2025MBA250":{"n":"GITEEK PRADHAN","s":"B","c":{"BM":"A","DVB":"B","IB":"","OFD":"","PM":"B","PP":"A","SAPM":"A","SCM":"B"}},"2025MBA251":{"n":"HARSHA","s":"B","c":{"AIB":"","BM":"B","CS":"B","DVB":"B","PMA":"A","TCBA":"","WAI":"B"}},"2025MBA252":{"n":"HEMANSHI ANCHALIA","s":"B","c":{"BM":"A","CS":"B","FPWM":"A","IB":"","SAPM":"A","SCM":"B","WAI":"B"}},"2025MBA253":{"n":"JABED AKHTAR","s":"A","c":{"AIB":"","CS":"A","FPWM":"A","GPP":"","IBS":"A","MPB":"B","SCM":"B","WAI":"B"}},"2025MBA254":{"n":"JEYA SANTHOSH KUMAR D","s":"B","c":{"ADE":"","BBM":"","DPM":"","DVB":"B","GPP":"","MPB":"B","PP":"A","SCM":"A","TCBA":""}},"2025MBA255":{"n":"KATTA SRI HARI","s":"B","c":{"BM":"B","DPM":"","GPP":"","IBS":"B","MPB":"B","PMA":"A","PP":"A","SCM":"B"}},"2025MBA256":{"n":"KHUSHI AGARWAL","s":"A","c":{"AIB":"","DVB":"B","FPWM":"A","GPP":"","IB":"","PMA":"A","PP":"B","SAPM":"A"}},"2025MBA257":{"n":"KHUSHI SINGHAL","s":"B","c":{"BAMD":"","DVB":"B","FPWM":"B","OFD":"","PMA":"A","SAPM":"B","WAI":"A"}},"2025MBA258":{"n":"KHUSHI VYAS","s":"B","c":{"BM":"B","CS":"B","FPWM":"A","IB":"","SAPM":"A","SCM":"A","WAI":"B"}},"2025MBA259":{"n":"KOTHAWADE PRIYANKA SHYAM","s":"B","c":{"AMR":"","DPM":"","DVB":"A","PM":"B","PMA":"A","TCBA":"","WAI":"B"}},"2025MBA260":{"n":"KUMARESH A","s":"A","c":{"AMR":"","DVB":"A","PM":"A","PMA":"A","SCM":"A","TCBA":""}},"2025MBA261":{"n":"KUNAL AGARWAL","s":"A","c":{"ADE":"","BBM":"","CS":"A","DVB":"B","PMA":"A","PP":"A","SCM":"A"}},"2025MBA262":{"n":"LAKSHITA SINGLA","s":"A","c":{"ADE":"","BAMD":"","BBM":"","DPM":"","PMA":"A","PP":"A","SCM":"A","WAI":"B"}},"2025MBA263":{"n":"MANISH KUMAR MAHATO","s":"B","c":{"AIB":"","BBM":"","DPM":"","IBS":"B","MPB":"A","PMA":"A","PP":"B","WAI":"B"}},"2025MBA264":{"n":"MANOJ KUMAR BORO","s":"B","c":{"ADE":"","BBM":"","BM":"B","FPWM":"B","IB":"","PM":"B","SAPM":"A","SCM":"A"}},"2025MBA265":{"n":"MEGHALI JAMBULKAR","s":"A","c":{"AIB":"","BAMD":"","BM":"A","DVB":"B","IBS":"B","MPB":"A","PMA":"A","TCBA":""}},"2025MBA266":{"n":"MURARI PUSHPA RAJ ALE","s":"A","c":{"BBM":"","CS":"A","DPM":"","IB":"","IBS":"B","MPB":"A","SAPM":"A","WAI":"B"}},"2025MBA267":{"n":"NAVNEET KUMAR PANDIT","s":"A","c":{"AMR":"","BAMD":"","BBM":"","CS":"A","FPWM":"B","PMA":"A","SAPM":"B"}},"2025MBA268":{"n":"NITESH KUMAR EKKA","s":"A","c":{"AMR":"","BBM":"","PM":"A","PMA":"A","SAPM":"A","SCM":"A"}},"2025MBA269":{"n":"OMKAR MANDAL","s":"A","c":{"BM":"A","CS":"B","FPWM":"A","IB":"","IBS":"B","OFD":"","PP":"B","SAPM":"A"}},"2025MBA270":{"n":"PATLOLLA SAIVAMSHI","s":"A","c":{"ADE":"","BM":"B","DPM":"","DVB":"B","PM":"A","PMA":"A","SCM":"A"}},"2025MBA271":{"n":"PAWAR SHUBHAM GIRISH","s":"A","c":{"AMR":"","BM":"B","CS":"B","MPB":"A","PM":"A","PMA":"A","PP":"A","SCM":"B","TCBA":""}},"2025MBA272":{"n":"PRAARTHANA PRADEEP","s":"A","c":{"CS":"A","DVB":"B","FPWM":"A","GPP":"","IB":"","IBS":"B","SAPM":"A"}},"2025MBA273":{"n":"PRANAV AJITH PRASAD VALATH","s":"A","c":{"CS":"A","DPM":"","FPWM":"B","MPB":"A","PM":"B","SCM":"A","TCBA":""}},"2025MBA274":{"n":"PRASHANT VERMA","s":"A","c":{"BM":"A","CS":"B","FPWM":"A","IB":"","PP":"A","SAPM":"A","SCM":"B"}},"2025MBA275":{"n":"PRERANA ROY","s":"B","c":{"AIB":"","BM":"B","DVB":"B","IBS":"B","MPB":"A","PP":"A","SCM":"B","WAI":"B"}},"2025MBA276":{"n":"PRITHIRAJ V A","s":"B","c":{"CS":"A","DPM":"","FPWM":"B","IB":"","MPB":"A","SAPM":"B","TCBA":""}},"2025MBA277":{"n":"RAJPUT AAYUSHKUMAR GHANSHYAMBHAI","s":"A","c":{"AMR":"","FPWM":"A","IB":"","OFD":"","PP":"A","SAPM":"A","SCM":"B","WAI":"A"}},"2025MBA278":{"n":"RAKESH KUMAR BEHERA","s":"A","c":{"BBM":"","CS":"A","DPM":"","MPB":"A","PMA":"A","SCM":"A","WAI":"B"}},"2025MBA279":{"n":"RESHMA D","s":"B","c":{"AIB":"","AMR":"","BAMD":"","BBM":"","DPM":"","GPP":"","MPB":"B","TCBA":""}},"2025MBA280":{"n":"SAKSHI","s":"A","c":{"AIB":"","AMR":"","BBM":"","DPM":"","DVB":"A","MPB":"A","PMA":"A","PP":"B","WAI":"B"}},"2025MBA281":{"n":"SARTHAK SHARMA","s":"A","c":{"AMR":"","BBM":"","DPM":"","DVB":"A","PMA":"A","SAPM":"B","TCBA":""}},"2025MBA282":{"n":"SAYANTAN MANDAL","s":"B","c":{"AIB":"","BAMD":"","DPM":"","DVB":"B","GPP":"","PMA":"A","TCBA":"","WAI":"B"}},"2025MBA283":{"n":"SHAKTI POOVELY","s":"B","c":{"ADE":"","AIB":"","BBM":"","DVB":"B","GPP":"","PM":"B","SCM":"A","WAI":"B"}},"2025MBA284":{"n":"SHATADRU SAMUI","s":"B","c":{"AMR":"","BAMD":"","IB":"","IBS":"B","OFD":"","PMA":"A","PP":"B","SAPM":"B"}},"2025MBA285":{"n":"SHREYA MANDAL","s":"B","c":{"BM":"B","DVB":"B","GPP":"","IBS":"B","MPB":"B","PMA":"A","PP":"B","WAI":"B"}},"2025MBA286":{"n":"SHUBH MISHRA","s":"A","c":{"BM":"A","GPP":"","IB":"","IBS":"B","MPB":"B","PMA":"A","SAPM":"A","WAI":"B"}},"2025MBA287":{"n":"SNIGDHA DAS","s":"B","c":{"BM":"B","CS":"B","DPM":"","DVB":"B","MPB":"A","PMA":"A","PP":"B","TCBA":""}},"2025MBA288":{"n":"SOUMYA SAH","s":"A","c":{"BBM":"","DVB":"B","FPWM":"A","IB":"","PMA":"A","PP":"B","SAPM":"A","WAI":"B"}},"2025MBA289":{"n":"SRI RAM NANNAPANENI","s":"A","c":{"CS":"A","DVB":"B","FPWM":"A","GPP":"","IB":"","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA290":{"n":"SUNKAVALLI SRI VIKRAM","s":"B","c":{"ADE":"","BAMD":"","CS":"A","IBS":"B","PM":"B","SAPM":"B","SCM":"A"}},"2025MBA291":{"n":"SURAJ PRATAP KANUNGO","s":"B","c":{"ADE":"","BAMD":"","DPM":"","FPWM":"B","IB":"","PM":"B","SAPM":"B","SCM":"A"}},"2025MBA292":{"n":"SUVARNA ANVITA VISHU","s":"A","c":{"BM":"B","CS":"B","DPM":"","PM":"A","PMA":"A","SCM":"A","TCBA":""}},"2025MBA293":{"n":"SWAYAM SAMPARNA","s":"A","c":{"BBM":"","BM":"A","DVB":"B","IBS":"B","MPB":"A","SCM":"A","WAI":"B"}},"2025MBA294":{"n":"TANMAYEE MAHANTA","s":"A","c":{"AMR":"","BBM":"","BM":"A","CS":"B","DVB":"A","PP":"B","WAI":"B"}},"2025MBA295":{"n":"TRIVEDI SHARVA ANAND","s":"B","c":{"CS":"A","FPWM":"B","IB":"","PM":"B","PP":"A","SAPM":"B","SCM":"B","TCBA":""}},"2025MBA296":{"n":"UDISH BHATNAGAR","s":"A","c":{"AIB":"","DPM":"","DVB":"B","FPWM":"A","GPP":"","IB":"","PMA":"A","PP":"B"}},"2025MBA297":{"n":"UNNATI JAIN","s":"A","c":{"BBM":"","BM":"B","DVB":"B","FPWM":"A","MPB":"A","PMA":"A","PP":"B","WAI":"B"}},"2025MBA298":{"n":"VINAYAK SONI","s":"B","c":{"BAMD":"","BBM":"","FPWM":"B","IB":"","IBS":"B","PM":"B","PP":"B"}},"2025MBA299":{"n":"YASHI ARYAN","s":"B","c":{"ADE":"","AIB":"","DVB":"B","GPP":"","MPB":"B","PM":"B","PP":"A","SCM":"B","WAI":"B"}},"2025MBA300":{"n":"ASHUTOSH ROY","s":"B","c":{"AMR":"","BAMD":"","CS":"A","GPP":"","IB":"","MPB":"B","SAPM":"B","WAI":"B"}},"2025MBA301":{"n":"PRIYANSHU KUMAR","s":"A","c":{"CS":"A","FPWM":"A","OFD":"","PM":"B","SAPM":"A","SCM":"A"}},"2025MBA302":{"n":"NIKHIL VARSHNEY","s":"B","c":{"BBM":"","IBS":"B","MPB":"A","PM":"B","SCM":"A","TCBA":"","WAI":"B"}},"2025MBA303":{"n":"HIMANSHU BHOYAR","s":"A","c":{"AIB":"","AMR":"","BBM":"","CS":"A","DPM":"","FPWM":"A","PMA":"A"}},"2025MBA304":{"n":"AYUSH PARTH SANTOSH KUMAR","s":"A","c":{"AIB":"","BAMD":"","DPM":"","DVB":"B","MPB":"A","PMA":"A","TCBA":"","WAI":"B"}},"2025MBA305":{"n":"KARTHIK P","s":"A","c":{"AMR":"","BM":"B","DVB":"A","GPP":"","PMA":"A","PP":"A","SAPM":"A","SCM":"B"}},"2025MBA307":{"n":"NIRJHAR MEHTA","s":"A","c":{"BM":"B","CS":"B","DVB":"B","FPWM":"A","IB":"","OFD":"","SAPM":"A","WAI":"A"}},"2025MBA308":{"n":"BISHAKHA DAS","s":"B","c":{"ADE":"","DPM":"","DVB":"B","IBS":"B","PM":"B","SCM":"A","WAI":"B"}},"2025MBA309":{"n":"Aditya Ajay Limkar","s":"A","c":{"ADE":"","AMR":"","BAMD":"","DPM":"","FPWM":"B","PMA":"A","PP":"A","TCBA":""}},"2025MBA310":{"n":"APOORVA SHARMA","s":"A","c":{"AMR":"","BM":"A","DVB":"A","IBS":"B","PMA":"A","PP":"A","SCM":"B"}},"2025MBA311":{"n":"SUYASH SAINATH","s":"A","c":{"AIB":"","FPWM":"A","GPP":"","IBS":"B","MPB":"B","PMA":"A","SAPM":"A","WAI":"B"}},"2025MBA312":{"n":"JAYESH KHARATE","s":"A","c":{"BM":"A","DVB":"B","FPWM":"A","IB":"","IBS":"B","MPB":"A","PM":"B","PP":"B"}},"2025MBA313":{"n":"GUVVU PRIYANKA","s":"B","c":{"ADE":"","BAMD":"","BM":"B","CS":"B","IBS":"B","PMA":"A","SCM":"A"}}};
+</script>
+<script>
+const SLOTS = ["08:00-09:30","10:00-11:30","12:00-13:30","14:30-16:00","16:30-18:00","18:30-20:00","20:30-22:00"];
+const SLOT_MIN = [[480,570],[600,690],[720,810],[870,960],[990,1080],[1110,1200],[1230,1320]];
+const C = window.COURSES || {}, STU = window.STUDENTS || {};
+const MID = " · ", DASH = " – ", ARL="◀", ARR="▶", CHK="✓", CROSS="✕";
+const $ = s=>document.querySelector(s);
+
+const DB={load(){try{return JSON.parse(localStorage.getItem('t4tracker')||'{}')}catch(e){return{}}}};
+let state = Object.assign({me:null,target:75,attendance:{},learnings:{},assignments:[],friends:[],reminders:false,liveUrl:'',lastSync:0}, DB.load());
+// migrate old friends format (objects with name/section) -> keep only regId strings
+state.friends = (state.friends||[]).filter(f=>typeof f==='string' && STU[f]);
+const DEFAULT_LIVE='https://docs.google.com/spreadsheets/d/1kyLrZ_j2TTeJqiAt4N2W1FkgMXPl_Cwx1RbYXDml4ic/edit';  // Hritik's public mirror (IMPORTRANGE of the official sheet)
+if(!state.liveUrl) state.liveUrl=DEFAULT_LIVE;
+// migrate: the official sheet link can't be fetched anonymously (requires OAuth) — switch to the mirror
+if(state.liveUrl.includes('1E0AaPYJi_sJXar2Wr12Di_0_MW92UdWMOn2BHkuSyUQ')) state.liveUrl=DEFAULT_LIVE;
+
+function persist(){ localStorage.setItem('t4tracker', JSON.stringify(state)); }
+
+// live schedule override (synced from Google Sheet) falls back to baked-in
+function validSched(arr){
+  if(!Array.isArray(arr)||arr.length<50) return false;
+  const okSec=/^(Section A|Section B|Single Section)$/i;
+  const dd=new Set();
+  for(const r of arr){
+    if(!r||typeof r.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(r.date)) return false;
+    if(!okSec.test(r.section||'')) return false;
+    if(!Array.isArray(r.slots)||r.slots.length!==7) return false;
+    dd.add(r.date);
+  }
+  return dd.size>=15;
+}
+let SCH = window.SCHEDULE || [];
+try{
+  const ov=JSON.parse(localStorage.getItem('t4sched')||'null');
+  if(validSched(ov)) SCH=ov;
+  else if(ov!==null) localStorage.removeItem('t4sched');   // junk from an old sync -> discard
+}catch(e){ try{localStorage.removeItem('t4sched');}catch(_){} }
+let dates=[...new Set(SCH.map(r=>r.date))].sort();
+// ---------- repo database (data/data.json, refreshed by GitHub Action every 12h or manual run) ----------
+function applyDataset(ds){
+  if(!ds||typeof ds!=='object')return false;
+  let changed=false;
+  if(ds.courses&&Object.keys(ds.courses).length>=10){ Object.keys(C).forEach(k=>delete C[k]); Object.assign(C,ds.courses); changed=true; }
+  if(ds.students&&Object.keys(ds.students).length>=100){ Object.keys(STU).forEach(k=>delete STU[k]); Object.assign(STU,ds.students); changed=true; }
+  // schedule from the repo DB only if no fresher client-side sheet sync is cached
+  if(validSched(ds.schedule)&&!localStorage.getItem('t4sched')){ SCH=ds.schedule; dates=[...new Set(SCH.map(r=>r.date))].sort(); changed=true; }
+  return changed;
+}
+function loadDataset(){
+  fetch('data/data.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(ds=>{
+    if(ds&&applyDataset(ds)){ if(!dates.includes(curDate))curDate=todayISO(); state.friends=(state.friends||[]).filter(f=>STU[f]); render(); scheduleReminders(); }
+  }).catch(()=>{});
+}
+
+const dayName=d=>new Date(d+'T00:00').toLocaleDateString('en-US',{weekday:'long'});
+const fmt=d=>new Date(d+'T00:00').toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
+const titleCase=s=>s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+const NAME_OVERRIDE={'2025MBA180':'Rishita'};
+const firstName=id=>NAME_OVERRIDE[id]||(STU[id]?titleCase(STU[id].n.split(' ')[0]):id);
+
+function me(){ return state.me && STU[state.me] ? STU[state.me] : null; }
+function personOf(id){ return STU[id]||null; }
+function secName(letter){ return 'Section '+letter; }
+
+function parseCell(txt){
+  if(!txt) return null;
+  let m=txt.match(/^([A-Z]{2,4})\s*[-\s]*\s*(\d+)/);
+  if(m&&C[m[1]]) return {code:m[1],sess:+m[2],raw:txt};
+  let m2=txt.match(/^([A-Z]{2,4})\b/);
+  if(m2&&C[m2[1]]) return {code:m2[1],sess:null,raw:txt};
+  return {code:null,sess:null,raw:txt,event:true};
+}
+// classes for a date, personalized PER COURSE: a student can be Sec A in one course and Sec B in another
+function classesFor(date, personId){
+  const p=personOf(personId); if(!p) return [];
+  const rows=SCH.filter(r=>r.date===date);
+  const out=[]; const seen=new Set();
+  rows.forEach(r=>r.slots.forEach((cell,si)=>{
+    if(!cell)return;
+    const pc=parseCell(cell); if(!pc)return;
+    if(pc.code){
+      if(!(pc.code in p.c)) return;                       // not enrolled
+      const cs=p.c[pc.code];                              // 'A' | 'B' | '' (course not sectioned)
+      if(r.section==='Single Section' || (cs && r.section==='Section '+cs)){
+        out.push({date,slot:si,section:r.section,cell,...pc});
+      } else if(!cs && r.section!=='Single Section'){     // unknown section: first occurrence of each session
+        const k=pc.code+'|'+(pc.sess||cell);
+        if(!seen.has(k)){ seen.add(k); out.push({date,slot:si,section:r.section,cell,...pc}); }
+      }
+    } else {
+      const hs='Section '+(p.s||'A');                     // events: home-section or common row, deduped
+      if((r.section===hs||r.section==='Single Section') && !seen.has('e|'+pc.raw)){ seen.add('e|'+pc.raw); out.push({date,slot:si,section:r.section,cell,...pc}); }
+    }
+  }));
+  return out.sort((a,b)=>a.slot-b.slot);
+}
+const attKey=(date,slot,code)=>`${date}|${slot}|${code||'x'}`;
+function localISO(t){t=t||new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
+function todayISO(){const iso=localISO();if(!dates.length)return iso;if(dates.includes(iso))return iso;const up=dates.find(d=>d>=iso);return up||dates[0];}
+let curDate=todayISO(), curTab='today', curPerson='me', curSubject=null, holidayExcl=new Set();
+
+function pendingToday(){
+  if(!me())return[];
+  const iso=localISO(); if(!dates.includes(iso)) return [];
+  const now=new Date().getHours()*60+new Date().getMinutes();
+  return classesFor(iso,state.me).filter(c=>c.code && now>=SLOT_MIN[c.slot][1] && !state.attendance[attKey(c.date,c.slot,c.code)]);
+}
+function courseStats(){
+  const stats={}; if(!me())return stats;
+  dates.forEach(d=>classesFor(d,state.me).forEach(c=>{
+    if(!c.code)return;
+    const s=stats[c.code]||(stats[c.code]={total:0,present:0,absent:0,cancelled:0,held:0,sessions:new Set()});
+    s.total++; if(c.sess)s.sessions.add(c.sess);
+    const st=state.attendance[attKey(c.date,c.slot,c.code)];
+    if(st==='P'){s.present++;s.held++}else if(st==='A'){s.absent++;s.held++}else if(st==='C'){s.cancelled++}
+  }));
+  return stats;
+}
+function overall(){const st=courseStats();let held=0,present=0,total=0;Object.values(st).forEach(s=>{held+=s.held;present+=s.present;total+=s.total});return{held,present,total,pct:held?Math.round(present/held*100):0};}
+
+// ---------- live sync via Google gviz (script-tag JSONP, works for link-shared sheets) ----------
+function sheetIdFrom(url){ const m=(url||'').match(/\/d\/([a-zA-Z0-9-_]{20,})/); return m?m[1]:null; }
+function excelSerialToISO(n){ const d=new Date(Date.UTC(1899,11,30)+n*86400000); return d.toISOString().slice(0,10); }
+let syncInteractive=false;
+function syncNow(interactive){
+  const id=sheetIdFrom(state.liveUrl);
+  if(!id){ if(interactive) openSyncModal(); return; }
+  syncInteractive=!!interactive;
+  window.google=window.google||{}; google.visualization=google.visualization||{};
+  google.visualization.Query=google.visualization.Query||{};
+  function attempt(noSheetParam){
+    google.visualization.Query.setResponse=function(resp){
+      try{
+        if(resp&&resp.status==='error'){
+          if(!noSheetParam){ attempt(true); return; }   // tab may not be named "Schedule" — retry with the first tab
+          const e0=(resp.errors&&resp.errors[0])||{};
+          throw new Error((e0.reason?e0.reason+': ':'')+(e0.detailed_message||e0.message||'Google returned an error'));
+        }
+        if(!resp||!resp.table||!resp.table.rows) throw new Error('empty response from Google');
+        const rows=resp.table.rows;
+        const recs=[]; let curD=null;
+        rows.forEach(r=>{
+          const c=r.c||[];
+          const gv=i=>(c[i]&&c[i].v!=null)?c[i].v:'';
+          let dv=gv(0);
+          if(dv){
+            if(typeof dv==='string'){const dm=dv.match(/Date\((\d+),(\d+),(\d+)/); if(dm){curD=`${dm[1]}-${String(+dm[2]+1).padStart(2,'0')}-${String(dm[3]).padStart(2,'0')}`;} }
+            else if(dv instanceof Date){curD=localISO(dv);}
+            else if(typeof dv==='number'){curD=excelSerialToISO(dv);}
+          }
+          const sec=String(gv(2)||'').trim();
+          if(!curD||!/Section/i.test(sec)) return;
+          const slots=[3,4,5,7,8,9,10].map(i=>String(gv(i)||'').replace(/\s+/g,' ').trim());
+          recs.push({date:curD,day:dayName(curD),section:sec,slots});
+        });
+        const okSec=/^(Section A|Section B|Single Section)$/i;
+        const clean=recs.filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&okSec.test(r.section)&&Array.isArray(r.slots)&&r.slots.length===7);
+        const dcount=new Set(clean.map(r=>r.date)).size;
+        if(clean.length>=50&&dcount>=15){
+          const newStr=JSON.stringify(clean);
+          const changed=newStr!==localStorage.getItem('t4sched');
+          localStorage.setItem('t4sched',newStr);
+          SCH=clean; dates=[...new Set(SCH.map(r=>r.date))].sort();
+          state.lastSync=Date.now(); persist();
+          if(changed){
+            if(!dates.includes(curDate)) curDate=todayISO();
+            render(); scheduleReminders();
+            toast('🔄 Schedule updated from the live sheet ('+dcount+' days)');
+          } else if(syncInteractive){ render(); toast('✅ Synced — already up to date'); }
+        } else if(!noSheetParam){ attempt(true); }
+        else if(syncInteractive){ toast('⚠️ Reached the sheet but found no timetable rows — is the schedule on the first tab (or a tab named "Schedule") with Date / Day / Section columns?'); }
+      }catch(e){ if(syncInteractive) toast('⚠️ Sync failed: '+e.message); }
+    };
+    const s=document.createElement('script');
+    s.src='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&headers=0'+(noSheetParam?'':'&sheet=Schedule');
+    s.onload=()=>s.remove();
+    s.onerror=()=>{s.remove();if(syncInteractive)toast('⚠️ Live sheet blocked this fetch. Use the browser where Google Drive opens with your IIM account, or set up a mirror sheet (open Sync for steps).');};
+    document.head.appendChild(s);
+  }
+  attempt(false);
+  if(interactive) toast('⏳ Syncing…');
+}
+function toast(msg){
+  let t=$('#toast'); if(t)t.remove();
+  t=document.createElement('div'); t.id='toast';
+  t.style.cssText='position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--sky);color:var(--txt);padding:10px 18px;border-radius:10px;z-index:99;box-shadow:0 4px 20px rgba(0,0,0,.4);font-size:13px';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>{if(t.parentNode)t.remove()},4500);
+}
+function openSyncModal(){
+  $('#modalHost').innerHTML=`<div class="modal-bg" id="mbg"><div class="modal">
+    <h2>🔄 Live schedule sync</h2>
+    <p class="small muted">The app re-fetches the <b>Schedule</b> tab from this link every time it opens, so shifted classes show up automatically.</p>
+    <p class="small muted"><b style="color:var(--saffron)">Note:</b> the official sheet is restricted to IIM accounts. Sync works if this browser is logged into your IIM Google account. If it fails, make your own always-updated mirror (2 min): <b>1)</b> sheets.new → in cell A1 type <code>=IMPORTRANGE("&lt;official link&gt;", "Schedule!A1:K700")</code> and click <b>Allow access</b> · <b>2)</b> Share it as "Anyone with link — Viewer" · <b>3)</b> rename its tab to <b>Schedule</b> and paste YOUR sheet's link below.</p>
+    <input id="liveUrlInp" placeholder="https://docs.google.com/spreadsheets/d/..." style="width:100%" value="${(state.liveUrl||'').replace(/"/g,'&quot;')}">
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      ${state.liveUrl?'<button id="clearLive">Remove link</button>':''}
+      <button id="cancelLive">Cancel</button>
+      <button class="btn-accent" id="saveLive">Save &amp; sync</button>
+    </div>
+    ${state.lastSync?`<div class="small muted" style="margin-top:10px">Last synced: ${new Date(state.lastSync).toLocaleString()}</div>`:''}
+    <div class="small muted" style="margin-top:10px">App misbehaving? <span class="link" id="resetSched">Clear cached schedule</span> · <span class="link" id="resetAll">Full reset</span></div>
+  </div></div>`;
+  $('#cancelLive').onclick=()=>$('#modalHost').innerHTML='';
+  const cl=$('#clearLive'); if(cl)cl.onclick=()=>{state.liveUrl='';localStorage.removeItem('t4sched');SCH=window.SCHEDULE;dates=[...new Set(SCH.map(r=>r.date))].sort();persist();$('#modalHost').innerHTML='';render();toast('Live link removed — using built-in schedule');};
+  $('#saveLive').onclick=()=>{
+    const u=$('#liveUrlInp').value.trim();
+    if(!sheetIdFrom(u)){alert('That does not look like a Google Sheets link (needs /d/<id>/).');return;}
+    state.liveUrl=u;persist();$('#modalHost').innerHTML='';syncNow(true);
+  };
+  const rs=$('#resetSched'); if(rs)rs.onclick=()=>{localStorage.removeItem('t4sched');location.reload();};
+  const ra=$('#resetAll'); if(ra)ra.onclick=()=>{if(confirm('This clears attendance, notes, assignments and settings on this device. Continue?')){localStorage.clear();location.reload();}};
+}
+
+// ---------- profile picker ----------
+function studentSearchBox(inputId, resultsId, onPick){
+  return {
+    html:`<div class="search-wrap"><input id="${inputId}" placeholder="Type a name or roll no (e.g. Hritik / 2025MBA100)..." style="width:100%" autocomplete="off"><div class="sr" id="${resultsId}" style="display:none"></div></div>`,
+    wire(){
+      const inp=$('#'+inputId), res=$('#'+resultsId);
+      inp.oninput=()=>{
+        const q=inp.value.trim().toLowerCase();
+        if(q.length<2){res.style.display='none';return;}
+        const hits=Object.keys(STU).filter(id=>STU[id].n.toLowerCase().includes(q)||id.toLowerCase().includes(q)).slice(0,12);
+        res.innerHTML=hits.map(id=>`<div data-pick="${id}"><b>${titleCase(STU[id].n)}</b> <span class="muted small">${id}${MID}${Object.keys(STU[id].c).length} electives</span></div>`).join('')||'<div class="muted">No match</div>';
+        res.style.display='block';
+        res.querySelectorAll('[data-pick]').forEach(el=>el.onclick=()=>{res.style.display='none';onPick(el.dataset.pick);});
+      };
+    }
+  };
+}
+function openWhoModal(){
+  const sb=studentSearchBox('whoInp','whoRes',id=>{state.me=id;persist();$('#modalHost').innerHTML='';curPerson='me';render();scheduleReminders();toast('Profile set: '+titleCase(STU[id].n)+' ('+Object.keys(STU[id].c).length+' electives)');});
+  $('#modalHost').innerHTML=`<div class="modal-bg"><div class="modal">
+    <h2>👤 Who are you?</h2>
+    <p class="small muted">Pick yourself from the batch roster — the app will show only <b>your section + your electives</b>. Friends sharing this file each pick their own name.</p>
+    ${sb.html}
+    <div class="row" style="margin-top:12px;justify-content:flex-end"><button id="cancelWho">Cancel</button></div>
+  </div></div>`;
+  sb.wire();
+  $('#cancelWho').onclick=()=>$('#modalHost').innerHTML='';
+  $('#whoInp').focus();
+}
+
+// ---------- reminders ----------
+let timers=[];
+function notify(title,body){ if(!('Notification'in window)||Notification.permission!=='granted')return; try{new Notification(title,{body,tag:title})}catch(e){} }
+function clearTimers(){timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[];}
+function scheduleReminders(){
+  clearTimers(); updateBell();
+  if(!state.reminders||!me())return;
+  const iso=localISO(); if(!dates.includes(iso))return;
+  const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  classesFor(iso,state.me).filter(c=>c.code).forEach(c=>{
+    const [st,en]=SLOT_MIN[c.slot];
+    if(st>nowMin){ timers.push(setTimeout(()=>notify('📚 Class starting',`${c.code}${c.sess?'-'+c.sess:''} — ${C[c.code].name} at ${SLOTS[c.slot].split('-')[0]}`),(st-nowMin)*60000)); }
+    if(en>nowMin){ timers.push(setTimeout(()=>{ if(!state.attendance[attKey(c.date,c.slot,c.code)]){notify('✅ Mark attendance',`Did you attend ${c.code}${c.sess?'-'+c.sess:''}? Open the app to mark P/A.`);} if(curTab==='today')render(); },(en-nowMin)*60000+60000)); }
+  });
+  timers.push(setInterval(()=>{updateBell();if(pendingToday().length&&curTab==='today')render();},60000));
+}
+function updateBell(){
+  const b=$('#bellBtn'); if(!b)return;
+  const on=state.reminders&&('Notification'in window)&&Notification.permission==='granted';
+  b.innerHTML = on? '🔔 Reminders: on' : '🔔 Reminders: off';
+  b.classList.toggle('btn-sky',on);
+}
+async function toggleReminders(){
+  if(state.reminders){state.reminders=false;persist();scheduleReminders();return;}
+  if(!('Notification'in window)){alert('This browser does not support notifications, but in-app reminders will still work.');state.reminders=true;persist();scheduleReminders();return;}
+  let perm=Notification.permission;
+  if(perm!=='granted') perm=await Notification.requestPermission();
+  state.reminders=true;persist();
+  if(perm==='granted') notify('🔔 Reminders enabled',"You'll get class-start and attendance reminders while this tab is open.");
+  else alert('Notifications were blocked by the browser. In-app reminders (banner + Today badge) still work. Allow notifications for this page in browser settings to get pop-ups.');
+  scheduleReminders();
+}
+
+// ---------- render ----------
+function personChips(){
+  if(!me())return '';
+  const ppl=[['me','Me ('+firstName(state.me)+')']].concat(state.friends.map(f=>[f,firstName(f)]));
+  return `<div class="pchips">${ppl.map(([id,lbl])=>`<span class="pchip ${curPerson===id?'active':''}" data-person="${id}">${lbl}${id!=='me'?'<span class="x" data-rmfriend="'+id+'">✕</span>':''}</span>`).join('')}
+  <span class="pchip" id="addFriendChip">+ friend</span></div>`;
+}
+function activePersonId(){ return curPerson==='me'? state.me : curPerson; }
+
+function render(){
+  $('#targetInp').value=state.target;
+  $('#whoName').textContent = me()? titleCase(me().n.split(' ')[0]) : 'Set profile';
+  $('#rangeSub').textContent=`${fmt(dates[0])}${DASH}${fmt(dates[dates.length-1])}${MID}${dates.length} class days`+(state.lastSync?`${MID}synced ${new Date(state.lastSync).toLocaleDateString()}`:'');
+  const pend=pendingToday().length;
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.t===curTab);
+    if(t.dataset.t==='today'){t.innerHTML='Today'+(pend?`<span class="dot">${pend}</span>`:'');}});
+  $('#view').innerHTML = me()? ({today:vToday,week:vWeek,attendance:vAtt,courses:vCourses,learnings:vLearn,assignments:vAssign,friends:vFriends,holidays:vHolidays}[curTab])() : vOnboard();
+  wire(); updateBell();
+}
+function vOnboard(){
+  return `<div class="card" style="text-align:center;padding:44px 24px">
+    <div style="font-size:40px">🏏</div>
+    <h2 style="font-size:20px">Welcome to the Term IV Tracker</h2>
+    <p class="muted">Pick your name from the batch roster to personalize your schedule —<br>only <b>your section and your electives</b> will show.</p>
+    <button class="btn-accent" id="onboardBtn" style="font-size:15px;padding:10px 22px">Choose my name</button>
+  </div>`;
+}
+function dayNavBar(){
+  const i=dates.indexOf(curDate);
+  return `<div class="row" style="justify-content:space-between">
+    <div class="day-nav"><button id="prevD" ${i<=0?'disabled':''}>${ARL}</button>
+      <select id="dateSel">${dates.map(d=>`<option value="${d}" ${d===curDate?'selected':''}>${fmt(d)}${MID}${dayName(d)}</option>`).join('')}</select>
+      <button id="nextD" ${i>=dates.length-1?'disabled':''}>${ARR}</button>
+      <button id="jumpToday">Today</button></div>
+    <div class="chip">${curPerson==='me'?'my classes':titleCase(personOf(activePersonId()).n)}</div></div>`;
+}
+function classRow(c,withAtt){
+  const nm=c.code?C[c.code].name:''; const label=c.code?`${c.code}${c.sess?'-'+c.sess:''}`:c.raw;
+  const k=attKey(c.date,c.slot,c.code); const st=state.attendance[k]||'';
+  const secTag=c.section==='Single Section'?'<span class="tag">All</span>':'';
+  const iso=localISO(); const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  const pending=withAtt&&c.code&&c.date===iso&&nowMin>=SLOT_MIN[c.slot][1]&&!st;
+  const att=(withAtt&&c.code)?`<div class="att-btns">
+      <button class="ab ${st==='P'?'sel':''}" data-s="P" data-k="${k}">P</button>
+      <button class="ab ${st==='A'?'sel':''}" data-s="A" data-k="${k}">A</button>
+      <button class="ab ${st==='C'?'sel':''}" data-s="C" data-k="${k}">Off</button></div>`:'';
+  const learn=(withAtt&&c.code)?`<span class="link" data-learn="${c.date}|${c.code}|${c.sess||''}">+ note</span>`:'';
+  return `<div class="cls ${pending?'pending':''}"><div class="info">
+      <div><span class="code">${label}</span> ${secTag} <span class="slot">${SLOTS[c.slot]}</span></div>
+      <div class="nm">${nm} ${learn}</div></div>${att}</div>`;
+}
+function vToday(){
+  const pid=activePersonId(); const isMe=curPerson==='me';
+  const cs=classesFor(curDate,pid); const real=cs.filter(c=>c.code); const events=cs.filter(c=>!c.code);
+  const ov=overall(); const pend=pendingToday();
+  let body=personChips();
+  if(isMe&&curDate===localISO()&&pend.length){
+    body+=`<div class="banner"><b>⏰ ${pend.length} class${pend.length>1?'es':''} to mark today.</b> Tap <b>P</b> / <b>A</b> / <b>Off</b> below — highlighted rows are waiting.
+      ${!state.reminders?' &nbsp; <span class="link" id="enableFromBanner">Enable reminders</span>':''}</div>`;
+  }
+  body+=dayNavBar();
+  body+=`<div class="card"><h2>${dayName(curDate)}${MID}${fmt(curDate)}${isMe?'':MID+titleCase(personOf(pid).n)}</h2>`;
+  if(!cs.length) body+=`<div class="empty">No classes scheduled${isMe?'':' for '+firstName(pid)}.</div>`;
+  else{
+    if(events.length) body+=events.map(e=>`<div class="chip" style="margin:0 6px 8px 0">📌 ${e.raw}</div>`).join('');
+    body+=real.length?real.map(c=>classRow(c,isMe)).join(''):`<div class="empty">No classes (events only).</div>`;
+  }
+  body+=`</div>`;
+  if(isMe) body+=`<div class="big3">
+    <div class="kpi"><div class="stat ${ov.pct>=state.target?'okrow':'warnrow'}">${ov.pct}%</div><div class="muted small">Overall attendance</div></div>
+    <div class="kpi"><div class="stat sm">${ov.present}/${ov.held}</div><div class="muted small">Attended / held</div></div>
+    <div class="kpi"><div class="stat sm">${real.length}</div><div class="muted small">Classes today</div></div></div>`;
+  return body;
+}
+function vWeek(){
+  const pid=activePersonId();
+  const week=dates.slice(dates.indexOf(curDate),dates.indexOf(curDate)+7);
+  const iso=localISO(); const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  let body=personChips()+dayNavBar();
+  body+=`<div class="card weekgrid"><h2>Next 7 class days${MID}${curPerson==='me'?'Me':titleCase(personOf(pid).n)}</h2><table><thead><tr><th>Slot</th>${week.map(d=>`<th>${fmt(d).replace(', ',' ')}<br><span class="muted small">${dayName(d).slice(0,3)}</span></th>`).join('')}</tr></thead><tbody>`;
+  SLOTS.forEach((sl,si)=>{
+    body+=`<tr><td class="muted small">${sl}</td>`;
+    week.forEach(d=>{const cs=classesFor(d,pid).filter(c=>c.slot===si);
+      body+=`<td class="wc">${cs.map(c=>{const lbl=c.code?`${c.code}${c.sess?'-'+c.sess:''}`:c.raw.slice(0,10);const now=(d===iso&&nowMin>=SLOT_MIN[si][0]&&nowMin<SLOT_MIN[si][1]);return `<span class="b ${now?'now':''}">${lbl}</span>`;}).join('')}</td>`;});
+    body+=`</tr>`;});
+  body+=`</tbody></table></div>`;return body;
+}
+function vAtt(){
+  const st=courseStats(); const ov=overall();
+  const rows=Object.keys(st).sort().map(code=>{const s=st[code];const pct=s.held?Math.round(s.present/s.held*100):0;
+    return `<tr><td><b>${code}</b><div class="muted small">${C[code].name}</div></td>
+      <td>${s.present}/${s.held}<span class="muted small"> (of ${s.total})</span></td>
+      <td class="${pct>=state.target?'okrow':(s.held?'warnrow':'muted')}">${s.held?pct+'%':'—'}</td>
+      <td class="small">${bunkable(s.present,s.held,s.total,state.target)}</td></tr>`;}).join('');
+  return `<div class="card"><div class="big3">
+      <div class="kpi"><div class="stat ${ov.pct>=state.target?'okrow':'warnrow'}">${ov.pct}%</div><div class="muted small">Overall</div></div>
+      <div class="kpi"><div class="stat sm">${ov.present}/${ov.held}</div><div class="muted small">Attended / held</div></div>
+      <div class="kpi"><div class="stat sm">${ov.total}</div><div class="muted small">Total scheduled</div></div></div></div>
+    <div class="card"><h2>My courses <span class="muted small">(target ${state.target}%)</span></h2>
+    <table class="flex-tbl"><thead><tr><th>Course</th><th>Attended</th><th>%</th><th>Margin</th></tr></thead><tbody>${rows||'<tr><td class="empty" colspan=4>Mark attendance in the Today tab.</td></tr>'}</tbody></table>
+    <div class="muted small" style="margin-top:8px">"Margin" = classes you can still miss (or must attend) to hold target, assuming all remaining scheduled classes are held.</div></div>`;
+}
+function bunkable(present,held,total,target){
+  const t=target/100; const remaining=total-held; const needTotal=Math.ceil(t*total);
+  const maxMiss=Math.min(remaining,Math.max(0,(present+remaining)-needTotal));
+  if(!held) return `<span class="muted">not started</span>`;
+  if(present/held>=t) return `<span class="okrow">can miss ${maxMiss} more</span>`;
+  return `<span class="warnrow">attend next ${Math.max(0,needTotal-present)}</span>`;
+}
+function vCourses(){
+  const st=courseStats(); const my=Object.keys(me().c).sort();
+  const chips=`<div class="pchips"><span class="pchip ${!curSubject?'active':''}" data-subj="">📊 Overview</span>${my.map(c=>`<span class="pchip ${curSubject===c?'active':''}" data-subj="${c}">${c}</span>`).join('')}</div>`;
+  if(curSubject&&my.includes(curSubject)) return chips+vSubjectDetail(curSubject);
+  const scheduled=Object.keys(st);
+  const unscheduled=my.filter(c=>!scheduled.includes(c));
+  const cards=scheduled.sort().map(code=>{const s=st[code];const totalSess=s.sessions.size||s.total;const done=new Set();
+    dates.forEach(d=>classesFor(d,state.me).forEach(c=>{if(c.code===code&&c.sess){const k=attKey(c.date,c.slot,c.code);if(state.attendance[k]==='P'||state.attendance[k]==='A')done.add(c.sess);}}));
+    const prog=totalSess?Math.round(done.size/totalSess*100):0;
+    return `<div class="card" style="cursor:pointer;margin-bottom:0" data-subj="${code}"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${code} <span class="tag">${C[code].credits} cr</span></h2><span class="muted small">${done.size}/${totalSess} sessions</span></div>
+      <div class="muted small" style="margin:4px 0 10px">${C[code].name}<br>${C[code].prof||''}</div>
+      <div class="bar"><i style="width:${prog}%"></i></div>
+      <div class="small muted" style="margin-top:6px">Progress ${prog}%${MID}${s.present} attended${MID}${s.cancelled} off${MID}<span class="link">open tab ▸</span></div></div>`;}).join('');
+  const extra=unscheduled.length?`<div class="card" style="margin-top:16px"><h2>Also enrolled (not on this timetable yet)</h2><div class="row">${unscheduled.map(c=>`<span class="chip">${c}${MID}${C[c]?C[c].name:''}</span>`).join('')}</div></div>`:'';
+  return chips+`<div class="grid g3">${cards||'<div class="empty">No scheduled courses.</div>'}</div>${extra}`;
+}
+function vSubjectDetail(code){
+  const p=C[code]||{name:code,prof:'',credits:''};
+  const sess=[];
+  dates.forEach(d=>classesFor(d,state.me).forEach(c=>{if(c.code===code)sess.push(c);}));
+  let present=0,absent=0,off=0,held=0;
+  const iso=localISO();
+  const rows=sess.map(c=>{
+    const k=attKey(c.date,c.slot,c.code); const stt=state.attendance[k]||'';
+    if(stt==='P'){present++;held++}else if(stt==='A'){absent++;held++}else if(stt==='C'){off++}
+    const note=state.learnings[`${c.date}|${c.code}|${c.sess||''}`]||'';
+    const isPast=c.date<iso, isToday=c.date===iso;
+    return `<tr style="${isToday?'background:rgba(255,122,26,.08)':''}">
+      <td><b>${code}${c.sess?'-'+c.sess:''}</b>${isToday?' <span class="tag" style="background:var(--orange);color:#2a1400">today</span>':''}</td>
+      <td class="small">${fmt(c.date)}<div class="muted small">${SLOTS[c.slot]}</div></td>
+      <td><div class="att-btns">
+        <button class="ab ${stt==='P'?'sel':''}" data-s="P" data-k="${k}">P</button>
+        <button class="ab ${stt==='A'?'sel':''}" data-s="A" data-k="${k}">A</button>
+        <button class="ab ${stt==='C'?'sel':''}" data-s="C" data-k="${k}">Off</button></div></td>
+      <td class="small" style="max-width:280px">${note?note.replace(/</g,'&lt;')+' <span class="link" data-learn="'+c.date+'|'+c.code+'|'+(c.sess||'')+'">edit</span>':'<span class="link" data-learn="'+c.date+'|'+c.code+'|'+(c.sess||'')+'">+ note</span>'}</td>
+    </tr>`;
+  }).join('');
+  const pct=held?Math.round(present/held*100):0;
+  const friendsIn=state.friends.filter(f=>STU[f]&&(code in STU[f].c)).map(f=>firstName(f));
+  return `<div class="card">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${code}${MID}${p.name} <span class="tag">${p.credits} cr</span></h2>
+    <span class="${held?(pct>=state.target?'okrow':'warnrow'):'muted'}">${held?pct+'% attendance':'no classes marked yet'}</span></div>
+    <div class="muted small" style="margin:4px 0 6px">${me().c[code]?'My section: '+me().c[code]+MID:''}${p.prof||''}</div>
+    <div class="muted small" style="margin:0 0 12px">${sess.length} sessions${MID}${present} present${MID}${absent} absent${MID}${off} off${friendsIn.length?MID+'👥 with you: '+friendsIn.join(', '):''}</div>
+    <table><thead><tr><th>Session</th><th>When</th><th>Attendance</th><th>Note / learning</th></tr></thead><tbody>${rows||'<tr><td colspan=4 class="empty">No sessions on the timetable yet.</td></tr>'}</tbody></table>
+  </div>`;
+}
+function vLearn(){
+  const keys=Object.keys(state.learnings).filter(k=>state.learnings[k].trim()).sort((a,b)=>b.localeCompare(a));
+  const list=keys.map(k=>{const [date,code,sess]=k.split('|');
+    return `<div class="cls"><div class="info"><div><span class="code">${code}${sess?'-'+sess:''}</span> <span class="slot">${fmt(date)}</span></div><div class="nm" style="white-space:normal;color:var(--txt)">${state.learnings[k].replace(/</g,'&lt;')}</div></div><button data-dellearn="${k}">${CROSS}</button></div>`;}).join('');
+  const cs=classesFor(curDate,state.me).filter(c=>c.code);
+  const opts=cs.map(c=>`<option value="${curDate}|${c.code}|${c.sess||''}">${fmt(curDate)}${MID}${c.code}${c.sess?'-'+c.sess:''}</option>`).join('');
+  return `<div class="card"><h2>Log a learning</h2><div class="row"><select id="learnSel">${opts||'<option>No classes on selected date</option>'}</select>
+    <button id="prevD2">${ARL} day</button><button id="nextD2">day ${ARR}</button></div>
+    <textarea id="learnTxt" rows="3" placeholder="Key takeaway, concept, formula, framework..." style="margin-top:10px"></textarea>
+    <div style="margin-top:8px"><button class="btn-accent" id="saveLearn">Save note</button></div></div>
+    <div class="card"><h2>All learnings <span class="muted small">(${keys.length})</span></h2>${list||'<div class="empty">No notes yet.</div>'}</div>`;
+}
+function vAssign(){
+  const a=state.assignments.slice().sort((x,y)=>(x.due||'').localeCompare(y.due||''));
+  const today=localISO();
+  const rows=a.map(it=>{let cls='due',lbl='Due';if(it.status==='done'){cls='done';lbl='Done'}else if(it.due&&it.due<today){cls='over';lbl='Overdue'}
+    return `<tr><td><b>${it.course||'—'}</b></td><td>${it.title.replace(/</g,'&lt;')}</td><td class="small">${it.due?fmt(it.due):'—'}</td>
+      <td><span class="pill ${cls}">${lbl}</span></td>
+      <td><button data-toggle="${it.id}">${it.status==='done'?'Reopen':'Done'}</button> <button data-dela="${it.id}">${CROSS}</button></td></tr>`;}).join('');
+  const opts=Object.keys(me().c).sort().map(c=>`<option value="${c}">${c}${C[c]?' — '+C[c].name:''}</option>`).join('');
+  const openCount=state.assignments.filter(x=>x.status!=='done').length;
+  return `<div class="card"><h2>Add assignment</h2><div class="grid g2">
+      <select id="aCourse"><option value="">Course...</option>${opts}</select>
+      <input id="aTitle" placeholder="Title (e.g. SAPM case submission)">
+      <input id="aDue" type="date"><button class="btn-accent" id="addA">Add</button></div></div>
+    <div class="card"><h2>Assignments <span class="muted small">(${openCount} open)</span></h2>
+    <table><thead><tr><th>Course</th><th>Title</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td class="empty" colspan=5>Nothing yet.</td></tr>'}</tbody></table></div>`;
+}
+function vFriends(){
+  const fr=state.friends;
+  const sb=studentSearchBox('frInp','frRes',id=>{
+    if(id===state.me){toast("That's you 😄");return;}
+    if(!state.friends.includes(id)){state.friends.push(id);persist();render();toast('Added '+titleCase(STU[id].n));}
+  });
+  const frCards=fr.map(f=>{const p=STU[f]; const cs=classesFor(curDate,f).filter(c=>c.code);
+    const shared=Object.keys(p.c).filter(c=>c in me().c);
+    return `<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${titleCase(p.n)}</h2><span class="chip">Sec ${p.s}</span></div>
+      <div class="muted small" style="margin:4px 0 8px">${fmt(curDate)}${MID}${Object.keys(p.c).length} electives${MID}<b style="color:var(--saffron)">${shared.length} shared with you</b>: ${shared.join(', ')||'none'}</div>
+      ${cs.length?cs.map(c=>`<div class="cls" style="margin-bottom:6px"><div class="info"><div><span class="code">${c.code}${c.sess?'-'+c.sess:''}</span> <span class="slot">${SLOTS[c.slot]}</span></div><div class="nm">${C[c.code].name}</div></div></div>`).join(''):'<div class="empty">No classes today.</div>'}
+      <button data-delf="${f}" style="margin-top:8px">Remove</button></div>`;}).join('');
+  let compare='';
+  if(fr.length){const mine=new Set(classesFor(curDate,state.me).map(c=>c.slot));
+    compare=`<div class="card"><h2>Common free slots${MID}${fmt(curDate)}</h2><div class="row">`;
+    SLOTS.forEach((sl,si)=>{const free=!mine.has(si)&&!fr.some(f=>classesFor(curDate,f).some(c=>c.slot===si));
+      compare+=`<span class="chip" style="${free?'border-color:var(--good);color:var(--good)':'opacity:.45'}">${sl} ${free?CHK:''}</span>`;});
+    compare+=`</div><div class="muted small" style="margin-top:6px">Slots where you and every added friend are all free.</div></div>`;}
+  return `${dayNavBar()}<div class="card"><h2>Add a friend from the roster</h2>${sb.html}<div class="muted small" style="margin-top:8px">Their section + electives load automatically. They also get a chip on the Today/Week tabs.</div></div>${compare}
+    <div class="grid g3">${frCards||'<div class="empty">No friends added yet.</div>'}</div>
+    <div style="display:none" id="frWire"></div>`;
+}
+
+function vHolidays(){
+  const todayIso=localISO();
+  const groupAll=state.friends.slice();
+  const group=groupAll.filter(f=>!holidayExcl.has(f));
+  const days=[];
+  const start=new Date(dates[0]+'T00:00'), end=new Date(dates[dates.length-1]+'T00:00');
+  for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+    const iso=localISO(d);
+    let anyClasses=0, events=[];
+    SCH.filter(r=>r.date===iso).forEach(r=>r.slots.forEach(cell=>{if(!cell)return;const p=parseCell(cell);if(p&&p.code)anyClasses++;else if(p&&p.raw&&!/lunch/i.test(p.raw))events.push(p.raw);}));
+    const myCount=classesFor(iso,state.me).filter(c=>c.code).length;
+    const busyFriends=group.filter(f=>classesFor(iso,f).filter(c=>c.code).length>0);
+    days.push({iso,anyClasses,events:[...new Set(events)],myCount,busyFriends});
+  }
+  const campus=days.filter(x=>x.anyClasses===0);
+  const myFree=days.filter(x=>x.myCount===0);
+  const groupFree=days.filter(x=>x.myCount===0&&x.busyFriends.length===0);
+  const almost=days.filter(x=>x.myCount===0&&x.busyFriends.length===1);
+  const up=arr=>arr.filter(x=>x.iso>=todayIso);
+  const past=arr=>arr.filter(x=>x.iso<todayIso);
+  const dayLine=(x,extra)=>{
+    const isPast=x.iso<todayIso, isToday=x.iso===todayIso;
+    const wknd=/^S(at|un)/.test(dayName(x.iso));
+    return `<div class="cls" style="${isPast?'opacity:.45;':''}${isToday?'border-color:var(--orange);':''}">
+      <div class="info"><div><span class="code">${fmt(x.iso)}</span> <span class="slot">${dayName(x.iso)}${wknd?' 🌞':''}</span>
+      ${x.anyClasses===0?'<span class="tag" style="background:rgba(47,208,138,.2);color:var(--good)">campus holiday</span>':'<span class="tag">others have class</span>'}
+      ${isToday?'<span class="tag" style="background:var(--orange);color:#2a1400">today</span>':''}</div>
+      <div class="nm" style="white-space:normal">${x.events.length?'📌 '+x.events.join(' · ')+' ':''}${extra||''}</div></div></div>`;
+  };
+  const kpi=`<div class="big3">
+    <div class="kpi"><div class="stat okrow">${up(groupFree).length}</div><div class="muted small">Upcoming group-free days 🎉</div></div>
+    <div class="kpi"><div class="stat sm">${up(myFree).length}</div><div class="muted small">Your free days left</div></div>
+    <div class="kpi"><div class="stat sm">${up(campus).length}</div><div class="muted small">Campus holidays left</div></div></div>`;
+  const groupCard=`<div class="card"><h2>🎉 Outing days — all ${group.length+1} of you free</h2>
+    ${up(groupFree).map(x=>dayLine(x)).join('')||'<div class="empty">No upcoming days where everyone is free.</div>'}
+    ${up(almost).length?`<h2 style="margin-top:16px">😬 Almost — just one person busy</h2>`+up(almost).map(x=>dayLine(x,`<b style="color:var(--warn)">${firstName(x.busyFriends[0])} has class</b>`)).join(''):''}</div>`;
+  const myCard=`<div class="card"><h2>🌴 Days you have no classes</h2>
+    ${up(myFree).map(x=>{
+      const freeF=group.filter(f=>!x.busyFriends.includes(f));
+      const note=x.busyFriends.length? `<span class="muted small">free with you: ${freeF.length?freeF.map(firstName).join(', '):'nobody 😢'}</span>`:'';
+      return dayLine(x,note);
+    }).join('')||'<div class="empty">No upcoming free days 😅</div>'}
+    ${past(myFree).length?`<div class="muted small" style="margin:12px 0 6px">Already gone:</div>`+past(myFree).map(x=>dayLine(x)).join(''):''}</div>`;
+  const selChips=`<div class="card" style="padding:12px 16px"><div class="row"><span class="small muted">Plan outing with:</span>${groupAll.map(f=>`<span class="pchip ${holidayExcl.has(f)?'':'active'}" data-hf="${f}">${firstName(f)}</span>`).join('')}${groupAll.length?`<span class="link" id="hfAll">${holidayExcl.size?'select all':''}</span>`:''}</div></div>`;
+  return selChips+kpi+groupCard+myCard;
+}
+
+function goDay(delta){const i=dates.indexOf(curDate)+delta;if(i>=0&&i<dates.length){curDate=dates[i];render();}}
+function wire(){
+  const b=(id,fn)=>{const el=$('#'+id);if(el)el.onclick=fn;};
+  b('prevD',()=>goDay(-1));b('nextD',()=>goDay(1));b('prevD2',()=>goDay(-1));b('nextD2',()=>goDay(1));
+  b('jumpToday',()=>{curDate=todayISO();render();});
+  b('enableFromBanner',()=>toggleReminders());
+  b('onboardBtn',()=>openWhoModal());
+  b('addFriendChip',()=>{curTab='friends';render();const i=$('#frInp');if(i)i.focus();});
+  const ds=$('#dateSel');if(ds)ds.onchange=e=>{curDate=e.target.value;render();};
+  document.querySelectorAll('[data-hf]').forEach(el=>el.onclick=()=>{const x=el.dataset.hf;if(holidayExcl.has(x))holidayExcl.delete(x);else holidayExcl.add(x);render();});
+  const hfa=$('#hfAll'); if(hfa)hfa.onclick=()=>{holidayExcl.clear();render();};
+  document.querySelectorAll('[data-subj]').forEach(el=>el.onclick=e=>{if(e.target.closest('.ab'))return;curSubject=el.dataset.subj||null;render();});
+  document.querySelectorAll('[data-person]').forEach(el=>el.onclick=e=>{
+    if(e.target.dataset.rmfriend)return;
+    curPerson=el.dataset.person;render();});
+  document.querySelectorAll('[data-rmfriend]').forEach(el=>el.onclick=e=>{e.stopPropagation();
+    state.friends=state.friends.filter(x=>x!==el.dataset.rmfriend);if(curPerson===el.dataset.rmfriend)curPerson='me';persist();render();});
+  document.querySelectorAll('.ab').forEach(el=>el.onclick=()=>{const k=el.dataset.k,s=el.dataset.s;
+    if(state.attendance[k]===s)delete state.attendance[k];else state.attendance[k]=s;persist();render();});
+  document.querySelectorAll('[data-learn]').forEach(el=>el.onclick=()=>{curTab='learnings';render();
+    const [d,code,sess]=el.dataset.learn.split('|');const sel=$('#learnSel');const val=`${d}|${code}|${sess}`;
+    if(sel&&[...sel.options].some(o=>o.value===val))sel.value=val;});
+  b('saveLearn',()=>{const sel=$('#learnSel'),t=$('#learnTxt');if(sel&&sel.value&&t.value.trim()){state.learnings[sel.value]=t.value.trim();persist();render();}});
+  document.querySelectorAll('[data-dellearn]').forEach(el=>el.onclick=()=>{delete state.learnings[el.dataset.dellearn];persist();render();});
+  b('addA',()=>{const t=$('#aTitle').value.trim();if(!t)return;state.assignments.push({id:Date.now()+''+Math.random().toString(36).slice(2,6),course:$('#aCourse').value,title:t,due:$('#aDue').value,status:'open'});persist();render();});
+  document.querySelectorAll('[data-toggle]').forEach(el=>el.onclick=()=>{const it=state.assignments.find(x=>x.id===el.dataset.toggle);it.status=it.status==='done'?'open':'done';persist();render();});
+  document.querySelectorAll('[data-dela]').forEach(el=>el.onclick=()=>{state.assignments=state.assignments.filter(x=>x.id!==el.dataset.dela);persist();render();});
+  document.querySelectorAll('[data-delf]').forEach(el=>el.onclick=()=>{state.friends=state.friends.filter(x=>x!==el.dataset.delf);if(curPerson===el.dataset.delf)curPerson='me';persist();render();});
+  if(curTab==='friends'&&me()){const sb=studentSearchBox('frInp','frRes',id=>{
+    if(id===state.me){toast("That's you 😄");return;}
+    if(!state.friends.includes(id)){state.friends.push(id);persist();render();toast('Added '+titleCase(STU[id].n));}
+  });sb.wire();}
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{if(!me()){openWhoModal();return;}curTab=t.dataset.t;curPerson='me';render();});
+$('#targetInp').onchange=e=>{state.target=Math.max(0,Math.min(100,+e.target.value||75));persist();render();};
+$('#bellBtn').onclick=toggleReminders;
+$('#whoBtn').onclick=openWhoModal;
+$('#syncBtn').onclick=()=>state.liveUrl?syncNow(true):openSyncModal();
+
+try{
+  render();
+}catch(err){
+  // Self-heal: a corrupted cached sync can break rendering - drop it and rebuild from built-in data
+  try{localStorage.removeItem('t4sched');}catch(e){}
+  SCH=window.SCHEDULE||[]; dates=[...new Set(SCH.map(r=>r.date))].sort();
+  curDate=todayISO(); curTab='today'; curPerson='me'; curSubject=null;
+  try{
+    render();
+    toast('⚠️ Cached schedule was corrupted — reset to built-in. Tap 🔄 Sync to re-fetch.');
+  }catch(e2){
+    document.getElementById('view').innerHTML='<div class="card"><h2>⚠️ Something broke</h2><div class="small muted" style="margin-bottom:10px">'+String(e2&&e2.message||e2).replace(/</g,'&lt;')+'</div><button class="btn-accent" onclick="localStorage.clear();location.reload()">Full reset (clears saved data)</button></div>';
+  }
+}
+scheduleReminders();
+if(state.liveUrl) syncNow(false);   // auto-refresh from live sheet on every open
+loadDataset();                      // pull roster/courses/schedule from the repo database
+// stay live while open: re-fetch when the tab regains focus (if >2 min since last) and every 30 minutes
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.liveUrl&&Date.now()-(state.lastSync||0)>120000)syncNow(false);});
+setInterval(()=>{if(state.liveUrl&&!document.hidden)syncNow(false);},1800000);
+</script>
+</body>
+</html>
